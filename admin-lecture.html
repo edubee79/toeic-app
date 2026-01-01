@@ -12,176 +12,202 @@
         .tab-btn.active { background-color: #4f46e5; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        /* 부드러운 전환 효과 */
-        .content-card { transition: all 0.3s ease; }
     </style>
 </head>
 <body class="min-h-screen flex">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0">
-    <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">
-        ADMIN ROOM
-    </div>
-
-    <nav class="flex-grow px-4 space-y-2">
-        <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-            <i class="fas fa-chart-line"></i> 대시보드 요약
-        </a>
-        <a href="admin-home.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-            <i class="fas fa-image"></i> 배너/홈페이지 관리
-        </a>
-        <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-            <i class="fas fa-book"></i> 강의/과제 관리
-        </a>
-        <a href="admin-student.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-            <i class="fas fa-user-graduate"></i> 학교/학생 관리
-        </a>
-        <a href="admin-revenue.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-            <i class="fas fa-wallet"></i> 수입 관리
-        </a>
-    </nav>
-</aside>
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0 h-screen sticky top-0">
+        <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">ADMIN ROOM</div>
+        <nav class="flex-grow px-4 space-y-2">
+            <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-white bg-indigo-600 shadow-sm">
+                <i class="fas fa-book"></i> 강의/과제 관리
+            </a>
+            <a href="admin-student.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+                <i class="fas fa-user-graduate"></i> 학교/학생 관리
+            </a>
+        </nav>
+    </aside>
 
     <main class="flex-grow p-10 overflow-y-auto">
         <header class="mb-10">
             <h1 class="text-3xl font-black text-slate-900">콘텐츠 마스터</h1>
-            <p class="text-slate-500 font-medium">강의를 반별로 분류하고 관리합니다.</p>
+            <p class="text-slate-500 font-medium italic">사진과 설명을 포함하여 체계적으로 강좌를 관리합니다.</p>
         </header>
 
         <div class="flex gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm w-fit border border-slate-100">
-            <button onclick="switchTab('list')" class="tab-btn active px-6 py-3 rounded-xl text-sm font-black transition-all">
-                <i class="fas fa-layer-group mr-2"></i> 콘텐츠 리스트/분류
-            </button>
-            <button onclick="switchTab('add-content')" class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-slate-400 hover:text-indigo-600 transition-all">
-                <i class="fas fa-plus-circle mr-2"></i> 새 콘텐츠 등록
-            </button>
+            <button onclick="switchTab('list')" id="btn-list" class="tab-btn active px-6 py-3 rounded-xl text-sm font-black transition-all">콘텐츠 리스트/분류</button>
+            <button onclick="switchTab('add')" id="btn-add" class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-slate-400 hover:text-indigo-600 transition-all">새 콘텐츠 등록</button>
         </div>
 
-        <div id="tab-list" class="tab-content active">
-            <div class="flex gap-4 mb-6">
-                <select id="filter-class" onchange="filterList()" class="bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm focus:ring-2 focus:ring-indigo-500">
-                    <option value="all">전체 수강반 보기</option>
-                    <option value="toeic">토익 850반</option>
-                    <option value="chinese">기초 중국어</option>
-                </select>
-                <div class="text-xs font-bold text-slate-400 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i> 반을 선택하면 해당 강의만 필터링됩니다.
+        <div id="tab-list" class="tab-content active space-y-6">
+            <div class="flex gap-4 items-center bg-white p-4 rounded-[1.5rem] shadow-sm border border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-black text-slate-400 uppercase ml-2">과목</span>
+                    <select id="filter-category" onchange="runFilter()" class="bg-slate-50 border-none rounded-xl px-4 py-2 text-sm font-bold outline-none">
+                        <option value="all">전체 과목</option>
+                        <option value="TOEIC">TOEIC</option>
+                        <option value="중국어">중국어</option>
+                        <option value="일본어">일본어</option>
+                        <option value="OPIC">OPIC</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-black text-slate-400 uppercase ml-2">학교/반</span>
+                    <select id="filter-target" onchange="runFilter()" class="bg-slate-50 border-none rounded-xl px-4 py-2 text-sm font-bold outline-none">
+                        <option value="all">전체 학교</option>
+                        <option value="daeon">대온고</option>
+                        <option value="innovation">혁신중</option>
+                    </select>
                 </div>
             </div>
-
-            <div id="content-list" class="space-y-4">
-                <div class="content-card bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex justify-between items-center" data-class="toeic">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center text-xl">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="bg-indigo-100 text-indigo-600 text-[9px] font-black px-2 py-0.5 rounded">토익 850반</span>
-                                <span class="text-[9px] font-black text-slate-300 uppercase italic">Lecture</span>
-                            </div>
-                            <h4 class="text-sm font-black text-slate-800">01. 시제와 태 완벽 정리</h4>
-                        </div>
-                    </div>
-                    <button onclick="this.parentElement.remove()" class="text-slate-200 hover:text-rose-500 transition-colors px-2"><i class="fas fa-trash-alt"></i></button>
-                </div>
-
-                <div class="content-card bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex justify-between items-center" data-class="chinese">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center text-xl">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="bg-emerald-100 text-emerald-600 text-[9px] font-black px-2 py-0.5 rounded">기초 중국어</span>
-                                <span class="text-[9px] font-black text-slate-300 uppercase italic">Lecture</span>
-                            </div>
-                            <h4 class="text-sm font-black text-slate-800">성조와 운모 배우기</h4>
-                        </div>
-                    </div>
-                    <button onclick="this.parentElement.remove()" class="text-slate-200 hover:text-rose-500 transition-colors px-2"><i class="fas fa-trash-alt"></i></button>
-                </div>
-            </div>
+            <div id="course-list-container" class="space-y-4"></div>
         </div>
 
-        <div id="tab-add-content" class="tab-content">
-            <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100 max-w-2xl">
-                <h3 class="text-2xl font-black text-slate-800 mb-8 italic">New Content Upload</h3>
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-black text-slate-400 mb-2">분류 선택 (수강반)</label>
-                        <select id="new-content-class" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
-                            <option value="toeic">토익 850반</option>
-                            <option value="chinese">기초 중국어</option>
+        <div id="tab-add" class="tab-content">
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                    <h3 class="text-xl font-black text-indigo-600 mb-8 italic">STEP 1. 강좌 상세 개설</h3>
+                    <div class="space-y-4">
+                        <select id="course-category" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
+                            <option value="TOEIC">TOEIC</option>
+                            <option value="중국어">중국어</option>
+                            <option value="일본어">일본어</option>
+                            <option value="OPIC">OPIC</option>
                         </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-400 mb-2">콘텐츠 종류</label>
-                        <div class="flex gap-2">
-                            <button onclick="selectType('lecture')" id="btn-type-lecture" class="flex-grow py-3 rounded-xl bg-indigo-600 text-white text-xs font-black">동영상 강의</button>
-                            <button onclick="selectType('task')" id="btn-type-task" class="flex-grow py-3 rounded-xl bg-slate-100 text-slate-400 text-xs font-black">과제 배포</button>
+                        <input type="text" id="course-name" placeholder="강좌명" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
+                        <input type="text" id="course-desc" placeholder="한줄 설명 (학생용 목록에 표시)" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold border-2 border-indigo-50">
+                        <input type="text" id="course-img" placeholder="이미지 주소 (URL)" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold border-2 border-indigo-50">
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="number" id="course-price" placeholder="수강료" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
+                            <select id="course-target" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
+                                <option value="all">전체공개</option>
+                                <option value="daeon">대온고</option>
+                                <option value="innovation">혁신중</option>
+                            </select>
                         </div>
+                        <button onclick="saveCourse()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg">강좌 개설 확정</button>
                     </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-400 mb-2">제목</label>
-                        <input type="text" id="new-title" placeholder="제목을 입력하세요" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
+                </div>
+
+                <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                    <h3 class="text-xl font-black text-slate-800 mb-8 italic">STEP 2. 영상 등록</h3>
+                    <div class="space-y-4">
+                        <select id="parent-course-select" class="w-full bg-emerald-50 border-none rounded-2xl p-4 text-sm font-black text-emerald-700"></select>
+                        <input type="text" id="lesson-title" placeholder="영상 제목" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
+                        <input type="text" id="lesson-vimeo" placeholder="Vimeo URL" class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
+                        <button onclick="saveLesson()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black">영상 저장</button>
                     </div>
-                    <div id="vimeo-input-area">
-                        <label class="block text-xs font-black text-slate-400 mb-2">Vimeo URL</label>
-                        <input type="text" id="new-vimeo" placeholder="https://vimeo.com/..." class="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold">
-                    </div>
-                    <button onclick="saveContent()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-sm shadow-xl">콘텐츠 저장하기</button>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <script>
-        let currentType = 'lecture';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        function switchTab(tabId) {
+        const firebaseConfig = {
+            apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
+            authDomain: "eduthot-fb088.firebaseapp.com",
+            projectId: "eduthot-fb088",
+            storageBucket: "eduthot-fb088.firebasestorage.app",
+            messagingSenderId: "919552710378",
+            appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const initRealtimeLoad = () => {
+            const q = query(collection(db, "Courses"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const listArea = document.getElementById('course-list-container');
+                const selectArea = document.getElementById('parent-course-select');
+                listArea.innerHTML = "";
+                selectArea.innerHTML = '<option value="">강좌를 선택하세요</option>';
+
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    listArea.innerHTML += `
+                        <div class="course-card bg-white p-6 rounded-[2rem] border flex justify-between items-center" 
+                             data-category="${data.category}" data-target="${data.target}" data-id="${id}">
+                            <div class="flex items-center gap-4">
+                                <img src="${data.img || ''}" class="w-12 h-12 rounded-xl object-cover bg-slate-100" onerror="this.src='https://via.placeholder.com/100'">
+                                <div>
+                                    <div class="flex gap-2">
+                                        <span class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full uppercase">${data.category}</span>
+                                        <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">${data.target}</span>
+                                    </div>
+                                    <h4 class="font-black text-slate-800">${data.name}</h4>
+                                </div>
+                            </div>
+                            <button onclick="deleteData('${id}')" class="text-slate-200 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button>
+                        </div>`;
+                    const opt = document.createElement('option');
+                    opt.value = id; opt.text = `[${data.category}] ${data.name}`;
+                    selectArea.appendChild(opt);
+                });
+                runFilter();
+            });
+        };
+
+        window.runFilter = () => {
+            const cat = document.getElementById('filter-category').value;
+            const target = document.getElementById('filter-target').value;
+            document.querySelectorAll('.course-card').forEach(card => {
+                const cCat = card.getAttribute('data-category');
+                const cTar = card.getAttribute('data-target');
+                const catMatch = (cat === 'all' || cCat === cat);
+                const targetMatch = (target === 'all' || cTar === target);
+                card.style.display = (catMatch && targetMatch) ? 'flex' : 'none';
+            });
+        };
+
+        window.saveCourse = async () => {
+            const category = document.getElementById('course-category').value;
+            const name = document.getElementById('course-name').value;
+            const desc = document.getElementById('course-desc').value;
+            const img = document.getElementById('course-img').value;
+            const price = document.getElementById('course-price').value;
+            const target = document.getElementById('course-target').value;
+
+            if(!name) return alert("강좌명을 입력하세요");
+
+            try {
+                await addDoc(collection(db, "Courses"), { 
+                    category, name, desc, img, price, target, createdAt: new Date() 
+                });
+                alert("성공적으로 등록되었습니다!");
+                document.getElementById('course-name').value = "";
+                document.getElementById('course-desc').value = "";
+                document.getElementById('course-img').value = "";
+                switchTab('list');
+            } catch (e) { alert(e); }
+        };
+
+        window.saveLesson = async () => {
+            const courseId = document.getElementById('parent-course-select').value;
+            const title = document.getElementById('lesson-title').value;
+            const vimeo = document.getElementById('lesson-vimeo').value;
+            if(!courseId || !title) return alert("필수 정보를 입력하세요");
+            await addDoc(collection(db, "Lessons"), { courseId, title, vimeo, createdAt: new Date() });
+            alert("영상 등록 완료!");
+            document.getElementById('lesson-title').value = "";
+            document.getElementById('lesson-vimeo').value = "";
+        };
+
+        window.deleteData = async (id) => { if(confirm("정말 삭제하시겠습니까?")) await deleteDoc(doc(db, "Courses", id)); };
+        
+        window.switchTab = (id) => {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
+            document.getElementById('tab-' + id).classList.add('active');
+            document.getElementById('btn-' + id).classList.add('active');
+        };
 
-        function selectType(type) {
-            currentType = type;
-            const lBtn = document.getElementById('btn-type-lecture');
-            const tBtn = document.getElementById('btn-type-task');
-            const vArea = document.getElementById('vimeo-input-area');
-
-            if(type === 'lecture') {
-                lBtn.className = "flex-grow py-3 rounded-xl bg-indigo-600 text-white text-xs font-black";
-                tBtn.className = "flex-grow py-3 rounded-xl bg-slate-100 text-slate-400 text-xs font-black";
-                vArea.style.display = 'block';
-            } else {
-                lBtn.className = "flex-grow py-3 rounded-xl bg-slate-100 text-slate-400 text-xs font-black";
-                tBtn.className = "flex-grow py-3 rounded-xl bg-rose-500 text-white text-xs font-black";
-                vArea.style.display = 'none';
-            }
-        }
-
-        function filterList() {
-            const val = document.getElementById('filter-class').value;
-            const cards = document.querySelectorAll('.content-card');
-            
-            cards.forEach(card => {
-                if(val === 'all' || card.getAttribute('data-class') === val) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        function saveContent() {
-            // 여기에 실제 저장 로직이 들어갑니다 (지금은 알림만)
-            alert('성공적으로 등록되었습니다!');
-            switchTab('list');
-        }
+        window.onload = initRealtimeLoad;
     </script>
 </body>
 </html>

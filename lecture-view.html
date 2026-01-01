@@ -3,96 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>강의 시청 | EDU THOT</title>
+    <title>강의 시청 | STUDENT ROOM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; color: white; } /* 어두운 모드로 몰입감 증대 */
-        .playlist-item.active { @apply bg-indigo-600 text-white; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; color: white; }
+        .curriculum-item.completed { opacity: 0.5; }
+        .curriculum-item.active { background-color: #312e81; border-left: 4px solid #6366f1; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="h-screen flex flex-col">
 
-    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+    <header class="h-16 border-b border-slate-800 flex items-center justify-between px-8 shrink-0 bg-slate-900">
         <div class="flex items-center gap-4">
-            <button onclick="history.back()" class="text-slate-400 hover:text-white transition-colors">
+            <button onclick="location.href='my-room.html'" class="text-slate-400 hover:text-white transition-all">
                 <i class="fas fa-arrow-left text-xl"></i>
             </button>
-            <h1 class="text-lg font-bold truncate max-w-[200px] md:max-w-md">토익 기출 유형 100제 완성</h1>
+            <h1 class="text-lg font-bold">[토익 850+] Unit 01. 주어와 동사 파악하기</h1>
         </div>
-        <div class="flex items-center gap-4">
-            <span class="text-xs font-bold text-slate-400 hidden md:block">75% 수강 완료</span>
-            <button onclick="location.href='my-room.html'" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all">
-                강의실 나가기
-            </button>
+        <div class="text-sm font-bold text-slate-400">
+            전체 진도율 <span class="text-indigo-400">45%</span>
         </div>
     </header>
 
-    <main class="flex-grow flex flex-col lg:flex-row overflow-hidden">
-        
-        <div class="flex-grow bg-black flex items-center justify-center relative">
-            <div class="aspect-video w-full max-h-[80vh] bg-slate-800 flex flex-col items-center justify-center group relative">
-                <i class="fas fa-play text-6xl text-white/20 group-hover:text-indigo-500 transition-all"></i>
-                <p class="text-slate-500 mt-4 font-medium">여기에 강의 영상이 표시됩니다.</p>
-                
-                <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-                    <div class="flex items-center gap-4 text-sm font-bold">
-                        <i class="fas fa-pause cursor-pointer"></i>
-                        <div class="flex-grow h-1 bg-slate-600 rounded-full overflow-hidden">
-                            <div class="bg-indigo-500 h-full w-[75%]"></div>
-                        </div>
-                        <span>24:15 / 32:00</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <aside class="w-full lg:w-96 bg-slate-900 border-l border-slate-800 flex flex-col">
-            <div class="p-6 border-b border-slate-800">
-                <h3 class="font-black text-slate-100 italic">LECTURE LIST</h3>
+    <div class="flex flex-grow overflow-hidden">
+        <main class="flex-grow bg-black flex items-center justify-center relative">
+            <div class="w-full aspect-video bg-slate-800 flex flex-col items-center justify-center border border-slate-700">
+                <i class="fas fa-play-circle text-8xl text-white/20 mb-4"></i>
+                <p class="text-slate-500 font-bold italic">강사님이 등록하신 강의 영상이 재생됩니다.</p>
             </div>
             
-            <div class="flex-grow overflow-y-auto no-scrollbar">
-                <div class="p-2 space-y-1">
-                    
-                    <button class="playlist-item w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-800 transition-all text-left">
-                        <span class="text-xs font-bold text-slate-500">01</span>
-                        <div class="flex-grow">
-                            <p class="text-sm font-bold text-slate-200">오리엔테이션 및 학습 가이드</p>
-                            <span class="text-[10px] text-slate-500 italic"><i class="fas fa-check-circle text-indigo-500"></i> 15:00</span>
-                        </div>
-                    </button>
-
-                    <button class="playlist-item active w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left">
-                        <span class="text-xs font-bold text-white/50">02</span>
-                        <div class="flex-grow">
-                            <p class="text-sm font-bold">Part 5: 기출 문법 핵심 요약</p>
-                            <span class="text-[10px] text-white/70 italic"><i class="fas fa-play-circle"></i> 32:00</span>
-                        </div>
-                    </button>
-
-                    <button class="playlist-item w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-800 transition-all text-left group">
-                        <span class="text-xs font-bold text-slate-500">03</span>
-                        <div class="flex-grow">
-                            <p class="text-sm font-bold text-slate-200">Part 6: 문맥을 통한 빈칸 추론</p>
-                            <span class="text-[10px] text-slate-500 italic">28:40</span>
-                        </div>
-                        <i class="fas fa-lock text-xs text-slate-700 group-hover:text-slate-500"></i>
-                    </button>
-
-                    </div>
+            <div class="absolute bottom-0 w-full p-6 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-center">
+                <div class="flex gap-4">
+                    <button class="text-white hover:text-indigo-400"><i class="fas fa-step-backward"></i> 이전강의</button>
+                    <button class="text-white hover:text-indigo-400">다음강의 <i class="fas fa-step-forward"></i></button>
+                </div>
+                <button class="bg-indigo-600 px-6 py-2 rounded-xl font-bold text-sm">과제 제출하기</button>
             </div>
+        </main>
 
-            <div class="p-6 bg-slate-800/50 border-t border-slate-800">
-                <button class="w-full bg-slate-700 hover:bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2">
-                    <i class="fas fa-download"></i>
-                    학습 자료 다운로드 (PDF)
-                </button>
+        <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <h2 class="text-sm font-black uppercase tracking-widest text-slate-500">Curriculum</h2>
+            </div>
+            <div class="flex-grow overflow-y-auto">
+                
+                <div class="curriculum-item completed p-6 border-b border-slate-800/50 flex gap-4 cursor-pointer hover:bg-slate-800/30">
+                    <div class="text-emerald-500 mt-1"><i class="fas fa-check-circle"></i></div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-500 mb-1">01차시</p>
+                        <p class="text-sm font-bold text-slate-300">오리엔테이션 및 학습법</p>
+                    </div>
+                </div>
+
+                <div class="curriculum-item active p-6 border-b border-slate-800/50 flex gap-4 cursor-pointer">
+                    <div class="text-indigo-400 mt-1"><i class="fas fa-play-circle animate-pulse"></i></div>
+                    <div>
+                        <p class="text-[10px] font-black text-indigo-400 mb-1">02차시 (학습 중)</p>
+                        <p class="text-sm font-black text-white">주어와 동사 파악하기</p>
+                    </div>
+                </div>
+
+                <div class="curriculum-item p-6 border-b border-slate-800/50 flex gap-4 cursor-pointer hover:bg-slate-800/30">
+                    <div class="text-slate-600 mt-1"><i class="fas fa-circle"></i></div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-500 mb-1">03차시</p>
+                        <p class="text-sm font-bold text-slate-400">목적어와 보어의 이해</p>
+                    </div>
+                </div>
+
+                <div class="curriculum-item p-6 border-b border-slate-800/50 flex gap-4 opacity-30">
+                    <div class="text-slate-600 mt-1"><i class="fas fa-lock"></i></div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-500 mb-1">04차시</p>
+                        <p class="text-sm font-bold text-slate-400">분사구문 정복하기</p>
+                    </div>
+                </div>
+
             </div>
         </aside>
-    </main>
+    </div>
 
 </body>
 </html>
