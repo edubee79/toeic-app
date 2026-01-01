@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수강신청 | EDU THOT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .filter-btn.active { @apply bg-slate-900 text-white shadow-lg shadow-slate-200; }
+        .filter-btn { @apply px-7 py-3 bg-white text-slate-500 border border-slate-100 rounded-2xl font-bold text-sm shrink-0 hover:bg-slate-50 transition-all; }
+        .lecture-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div onclick="location.href='index.html'" class="flex items-center gap-2 text-slate-900 font-black text-xl cursor-pointer">
+                <i class="fas fa-graduation-cap text-indigo-600"></i>
+                <span>EDU THOT</span>
+            </div>
+            <div class="flex gap-6 md:gap-12 font-bold text-slate-700 text-sm">
+                <a href="lecture-list.html" class="text-indigo-600 border-b-2 border-indigo-600 pb-1">수강신청</a>
+                <a href="my-room.html" class="hover:text-indigo-600 transition-colors">나의 강의실</a>
+            </div>
+            <a href="login.html" class="text-slate-600 hover:text-indigo-600"><i class="fas fa-user-circle text-2xl"></i></a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6 mt-8">
+        <div class="mb-12">
+            <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">수강신청</h1>
+            <p class="text-slate-400 mt-3 font-medium">나에게 필요한 어학 강의를 찾아보세요.</p>
+        </div>
+
+        <div class="flex gap-3 mb-12 overflow-x-auto pb-4 no-scrollbar">
+            <button onclick="filterLectures('all', this)" class="filter-btn active">전체</button>
+            <button onclick="filterLectures('TOEIC', this)" class="filter-btn">TOEIC</button>
+            <button onclick="filterLectures('중국어', this)" class="filter-btn">중국어</button>
+            <button onclick="filterLectures('일본어', this)" class="filter-btn">일본어</button>
+            <button onclick="filterLectures('OPIC', this)" class="filter-btn">OPIC</button>
+        </div>
+
+        <div id="lecture-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            
+            <div class="lecture-card" data-category="TOEIC">
+                <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all">
+                    <div class="h-52 bg-slate-200 overflow-hidden"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover"></div>
+                    <div class="p-8">
+                        <span class="text-[11px] font-black bg-indigo-50 text-indigo-500 px-3 py-1 rounded-lg uppercase">TOEIC</span>
+                        <h3 class="text-xl font-black text-slate-800 mt-4 mb-2">토익 기출 유형 100제 완성</h3>
+                        <p class="text-sm text-slate-400 mb-6 font-medium">단기 목표 달성을 위한 핵심 커리큘럼</p>
+                        <div class="flex justify-between items-center pt-6 border-t border-slate-50">
+                            <span class="text-2xl font-black text-slate-900">₩99,000</span>
+                            <button class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black text-xs">신청하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lecture-card" data-category="OPIC">
+                <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all">
+                    <div class="h-52 bg-slate-200 overflow-hidden"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover"></div>
+                    <div class="p-8">
+                        <span class="text-[11px] font-black bg-emerald-50 text-emerald-500 px-3 py-1 rounded-lg uppercase">OPIC</span>
+                        <h3 class="text-xl font-black text-slate-800 mt-4 mb-2">오픽 AL 달성 실전 패턴</h3>
+                        <p class="text-sm text-slate-400 mb-6 font-medium">입에서 바로 나오는 고득점 암기 공식</p>
+                        <div class="flex justify-between items-center pt-6 border-t border-slate-50">
+                            <span class="text-2xl font-black text-slate-900">₩110,000</span>
+                            <button class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black text-xs">신청하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // [교체분] 이 안의 내용은 기존 기능을 포함하면서 + 메인 연동 기능까지 추가된 버전입니다.
+
+        // 1. 카테고리 필터링 함수 (버튼 클릭 시 작동)
+        function filterLectures(category, btn) {
+            // 모든 필터 버튼에서 active(검은색 배경) 클래스를 제거
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            // 클릭된 버튼이 있다면 그 버튼만 active 클래스 추가
+            if(btn) btn.classList.add('active');
+
+            // 모든 강의 카드를 불러와서 카테고리 체크
+            const cards = document.querySelectorAll('.lecture-card');
+            cards.forEach(card => {
+                // '전체'를 눌렀거나, 카드의 데이터 카테고리가 선택한 카테고리와 같으면 보여줌
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 2. 페이지 로드 시 주소창 체크 (메인페이지에서 넘어왔을 때 작동)
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category'); 
+
+            if (categoryParam) {
+                // 주소창에 '중국어' 등이 적혀있다면, 화면에서 이름이 '중국어'인 버튼을 찾음
+                const targetBtn = Array.from(document.querySelectorAll('.filter-btn'))
+                                       .find(btn => btn.innerText === categoryParam);
+                
+                // 찾은 버튼을 가지고 필터 함수 실행
+                filterLectures(categoryParam, targetBtn);
+            }
+        };
+    </script>
+</body>
+</html>

@@ -23,8 +23,8 @@
             </div>
 
             <div class="flex gap-4 md:gap-12 font-bold text-gray-700 text-sm md:text-base">
-                <a href="#" class="hover:text-indigo-600 transition-colors">수강신청</a>
-                <a href="#" class="hover:text-indigo-600 transition-colors">나의 강의실</a>
+                <a href="lecture-list.html" class="hover:text-indigo-600 transition-colors">수강신청</a>
+                <a href="my-room.html" class="hover:text-indigo-600 transition-colors">나의 강의실</a>
             </div>
 
             <div class="flex items-center">
@@ -45,24 +45,37 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            <div class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4">
-                <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl"><i class="fas fa-award"></i></div>
-                <span class="font-bold text-slate-800 text-lg">TOEIC</span>
-            </div>
-            <div class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4">
-                <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 text-3xl"><i class="fas fa-globe-asia"></i></div>
-                <span class="font-bold text-slate-800 text-lg">중국어</span>
-            </div>
-            <div class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4">
-                <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-400 text-3xl"><i class="fas fa-torii-gate"></i></div>
-                <span class="font-bold text-slate-800 text-lg">일본어</span>
-            </div>
-            <div class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4">
-                <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 text-3xl"><i class="fas fa-comments"></i></div>
-                <span class="font-bold text-slate-800 text-lg">OPIC</span>
-            </div>
+       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+    
+    <a href="lecture-list.html?category=TOEIC" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+        <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
+            <i class="fas fa-award"></i>
         </div>
+        <span class="font-bold text-slate-800 text-lg">TOEIC</span>
+    </a>
+
+    <a href="lecture-list.html?category=중국어" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+        <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 text-3xl group-hover:bg-red-600 group-hover:text-white transition-all">
+            <i class="fas fa-globe-asia"></i>
+        </div>
+        <span class="font-bold text-slate-800 text-lg">중국어</span>
+    </a>
+
+    <a href="lecture-list.html?category=일본어" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+        <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 text-3xl group-hover:bg-orange-600 group-hover:text-white transition-all">
+            <i class="fas fa-torii-gate"></i>
+        </div>
+        <span class="font-bold text-slate-800 text-lg">일본어</span>
+    </a>
+
+    <a href="lecture-list.html?category=OPIC" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+        <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-3xl group-hover:bg-blue-600 group-hover:text-white transition-all">
+            <i class="fas fa-comments"></i>
+        </div>
+        <span class="font-bold text-slate-800 text-lg">OPIC</span>
+    </a>
+
+</div>
 
         <section class="mt-8 pb-20">
             <div class="flex justify-between items-end mb-8">
