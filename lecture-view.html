@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강의 시청 | EDU THOT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; color: white; } /* 어두운 모드로 몰입감 증대 */
+        .playlist-item.active { @apply bg-indigo-600 text-white; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <button onclick="history.back()" class="text-slate-400 hover:text-white transition-colors">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 class="text-lg font-bold truncate max-w-[200px] md:max-w-md">토익 기출 유형 100제 완성</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-xs font-bold text-slate-400 hidden md:block">75% 수강 완료</span>
+            <button onclick="location.href='my-room.html'" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all">
+                강의실 나가기
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col lg:flex-row overflow-hidden">
+        
+        <div class="flex-grow bg-black flex items-center justify-center relative">
+            <div class="aspect-video w-full max-h-[80vh] bg-slate-800 flex flex-col items-center justify-center group relative">
+                <i class="fas fa-play text-6xl text-white/20 group-hover:text-indigo-500 transition-all"></i>
+                <p class="text-slate-500 mt-4 font-medium">여기에 강의 영상이 표시됩니다.</p>
+                
+                <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+                    <div class="flex items-center gap-4 text-sm font-bold">
+                        <i class="fas fa-pause cursor-pointer"></i>
+                        <div class="flex-grow h-1 bg-slate-600 rounded-full overflow-hidden">
+                            <div class="bg-indigo-500 h-full w-[75%]"></div>
+                        </div>
+                        <span>24:15 / 32:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="w-full lg:w-96 bg-slate-900 border-l border-slate-800 flex flex-col">
+            <div class="p-6 border-b border-slate-800">
+                <h3 class="font-black text-slate-100 italic">LECTURE LIST</h3>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto no-scrollbar">
+                <div class="p-2 space-y-1">
+                    
+                    <button class="playlist-item w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-800 transition-all text-left">
+                        <span class="text-xs font-bold text-slate-500">01</span>
+                        <div class="flex-grow">
+                            <p class="text-sm font-bold text-slate-200">오리엔테이션 및 학습 가이드</p>
+                            <span class="text-[10px] text-slate-500 italic"><i class="fas fa-check-circle text-indigo-500"></i> 15:00</span>
+                        </div>
+                    </button>
+
+                    <button class="playlist-item active w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left">
+                        <span class="text-xs font-bold text-white/50">02</span>
+                        <div class="flex-grow">
+                            <p class="text-sm font-bold">Part 5: 기출 문법 핵심 요약</p>
+                            <span class="text-[10px] text-white/70 italic"><i class="fas fa-play-circle"></i> 32:00</span>
+                        </div>
+                    </button>
+
+                    <button class="playlist-item w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-800 transition-all text-left group">
+                        <span class="text-xs font-bold text-slate-500">03</span>
+                        <div class="flex-grow">
+                            <p class="text-sm font-bold text-slate-200">Part 6: 문맥을 통한 빈칸 추론</p>
+                            <span class="text-[10px] text-slate-500 italic">28:40</span>
+                        </div>
+                        <i class="fas fa-lock text-xs text-slate-700 group-hover:text-slate-500"></i>
+                    </button>
+
+                    </div>
+            </div>
+
+            <div class="p-6 bg-slate-800/50 border-t border-slate-800">
+                <button class="w-full bg-slate-700 hover:bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i>
+                    학습 자료 다운로드 (PDF)
+                </button>
+            </div>
+        </aside>
+    </main>
+
+</body>
+</html>
