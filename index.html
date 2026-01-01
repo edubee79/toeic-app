@@ -11,13 +11,15 @@
         body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
         .menu-card { transition: all 0.3s ease; cursor: pointer; }
         .menu-card:hover { transform: translateY(-5px); border-color: #4f46e5; }
+        /* 로그아웃 버튼용 스타일 추가 */
+        .logout-btn { @apply text-xs font-bold text-red-400 hover:text-red-600 ml-3 underline cursor-pointer; }
     </style>
 </head>
 <body class="min-h-screen">
 
     <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b">
         <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 text-indigo-700 font-black text-lg md:text-2xl cursor-pointer">
+            <div onclick="location.href='index.html'" class="flex items-center gap-2 text-indigo-700 font-black text-lg md:text-2xl cursor-pointer">
                 <i class="fas fa-graduation-cap"></i>
                 <span>EDU THOT</span>
             </div>
@@ -27,10 +29,10 @@
                 <a href="my-room.html" class="hover:text-indigo-600 transition-colors">나의 강의실</a>
             </div>
 
-            <div class="flex items-center">
+            <div id="auth-area" class="flex items-center">
                 <a href="login.html" class="flex items-center gap-2 text-xs md:text-sm font-bold text-gray-600 hover:text-indigo-600 border border-gray-200 px-3 py-1.5 md:px-4 md:py-2 rounded-full transition-all">
                     <i class="fas fa-user-circle text-base md:text-lg"></i>
-                    <span class="hidden xs:inline">로그인</span>
+                    <span>로그인</span>
                 </a>
             </div>
         </div>
@@ -45,37 +47,32 @@
             </div>
         </div>
 
-       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-    
-    <a href="lecture-list.html?category=TOEIC" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
-        <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
-            <i class="fas fa-award"></i>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            <a href="lecture-list.html?category=TOEIC" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+                <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                    <i class="fas fa-award"></i>
+                </div>
+                <span class="font-bold text-slate-800 text-lg">TOEIC</span>
+            </a>
+            <a href="lecture-list.html?category=중국어" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+                <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 text-3xl group-hover:bg-red-600 group-hover:text-white transition-all">
+                    <i class="fas fa-globe-asia"></i>
+                </div>
+                <span class="font-bold text-slate-800 text-lg">중국어</span>
+            </a>
+            <a href="lecture-list.html?category=일본어" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+                <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 text-3xl group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-torii-gate"></i>
+                </div>
+                <span class="font-bold text-slate-800 text-lg">일본어</span>
+            </a>
+            <a href="lecture-list.html?category=OPIC" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
+                <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-3xl group-hover:bg-blue-600 group-hover:text-white transition-all">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <span class="font-bold text-slate-800 text-lg">OPIC</span>
+            </a>
         </div>
-        <span class="font-bold text-slate-800 text-lg">TOEIC</span>
-    </a>
-
-    <a href="lecture-list.html?category=중국어" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
-        <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 text-3xl group-hover:bg-red-600 group-hover:text-white transition-all">
-            <i class="fas fa-globe-asia"></i>
-        </div>
-        <span class="font-bold text-slate-800 text-lg">중국어</span>
-    </a>
-
-    <a href="lecture-list.html?category=일본어" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
-        <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 text-3xl group-hover:bg-orange-600 group-hover:text-white transition-all">
-            <i class="fas fa-torii-gate"></i>
-        </div>
-        <span class="font-bold text-slate-800 text-lg">일본어</span>
-    </a>
-
-    <a href="lecture-list.html?category=OPIC" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
-        <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-3xl group-hover:bg-blue-600 group-hover:text-white transition-all">
-            <i class="fas fa-comments"></i>
-        </div>
-        <span class="font-bold text-slate-800 text-lg">OPIC</span>
-    </a>
-
-</div>
 
         <section class="mt-8 pb-20">
             <div class="flex justify-between items-end mb-8">
@@ -108,5 +105,38 @@
             </div>
         </section>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const authArea = document.getElementById('auth-area');
+            const userLogined = localStorage.getItem('userLogined');
+
+            if (userLogined) {
+                const userData = JSON.parse(userLogined);
+                // 로그인 상태일 때: "사용자명(학교) | 로그아웃" 표시
+                authArea.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-[10px] font-black text-indigo-500 uppercase leading-none">${userData.school}</p>
+                            <p class="text-sm font-bold text-slate-800 leading-tight">${userData.userId}님</p>
+                        </div>
+                        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                            <i class="fas fa-user text-xs"></i>
+                        </div>
+                        <span onclick="handleLogout()" class="logout-btn">로그아웃</span>
+                    </div>
+                `;
+            }
+        });
+
+        // 로그아웃 처리 함수
+        function handleLogout() {
+            if (confirm("로그아웃 하시겠습니까?")) {
+                localStorage.removeItem('userLogined');
+                alert("로그아웃 되었습니다.");
+                location.reload(); // 페이지 새로고침하여 원래 버튼으로 복구
+            }
+        }
+    </script>
 </body>
 </html>

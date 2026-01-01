@@ -18,17 +18,31 @@
         <div class="text-2xl font-black italic tracking-tighter text-slate-900 cursor-pointer" onclick="location.href='index.html'">
             STUDENT ROOM
         </div>
-        <div class="flex items-center gap-6">
-            <span class="text-sm font-bold text-slate-600">이영희 학생 (대온고)</span>
-            <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black">YH</div>
-            <button class="text-slate-400 hover:text-slate-900"><i class="fas fa-sign-out-alt"></i></button>
+        
+        <div id="user-info-nav" class="flex items-center gap-4">
+            <div class="flex flex-col items-end">
+                <span id="nav-user-details" class="text-sm font-bold text-slate-600">불러오는 중...</span>
+                <button onclick="location.href='my-profile.html'" class="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md hover:bg-indigo-100 transition-all">
+                    <i class="fas fa-cog mr-1"></i>내 정보 관리
+                </button>
+            </div>
+            
+            <div onclick="location.href='my-profile.html'" id="nav-user-icon" class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black cursor-pointer hover:scale-105 transition-all shadow-md shadow-indigo-100">
+                ?
+            </div>
+            
+            <div class="w-px h-6 bg-slate-200 mx-2"></div>
+            
+            <button onclick="handleLogout()" class="text-slate-400 hover:text-rose-500 transition-colors" title="로그아웃">
+                <i class="fas fa-sign-out-alt text-lg"></i>
+            </button>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto p-8 md:p-12">
         <header class="mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div>
-                <h1 class="text-4xl font-black text-slate-900 mb-2">안녕하세요, 영희님! 👋</h1>
+            <div id="welcome-message">
+                <h1 class="text-4xl font-black text-slate-900 mb-2">안녕하세요! 👋</h1>
                 <p class="text-slate-500 font-medium text-lg">오늘도 목표를 향해 열공해볼까요?</p>
             </div>
             <div class="bg-indigo-600 text-white p-8 rounded-[2.5rem] shadow-xl shadow-indigo-100 flex items-center gap-8">
@@ -46,7 +60,6 @@
         <section class="mb-12">
             <h2 class="text-2xl font-black text-slate-900 mb-8 italic">My Courses</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
                 <div class="course-card">
                     <div class="aspect-video bg-slate-200 relative">
                         <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=800" class="w-full h-full object-cover">
@@ -68,7 +81,6 @@
                         </button>
                     </div>
                 </div>
-
                 <div class="course-card opacity-70">
                     <div class="aspect-video bg-slate-200 relative">
                         <img src="https://images.unsplash.com/photo-1524069290683-0457abfe42c3?auto=format&fit=crop&w=800" class="w-full h-full object-cover grayscale">
@@ -90,7 +102,6 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -115,5 +126,35 @@
         </section>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userLogined = localStorage.getItem('userLogined');
+            
+            if (!userLogined) {
+                alert("로그인이 필요한 페이지입니다.");
+                location.href = "login.html";
+                return;
+            }
+
+            const userData = JSON.parse(userLogined);
+
+            // 데이터 연동
+            document.getElementById('nav-user-details').textContent = `${userData.userId} 학생 (${userData.school})`;
+            document.getElementById('nav-user-icon').textContent = userData.userId.substring(0, 2).toUpperCase();
+
+            // 환영인사
+            document.getElementById('welcome-message').innerHTML = `
+                <h1 class="text-4xl font-black text-slate-900 mb-2">안녕하세요, ${userData.userId}님! 👋</h1>
+                <p class="text-slate-500 font-medium text-lg">오늘도 목표를 향해 열공해볼까요?</p>
+            `;
+        });
+
+        function handleLogout() {
+            if(confirm("로그아웃 하시겠습니까?")) {
+                localStorage.removeItem('userLogined');
+                location.href = "index.html";
+            }
+        }
+    </script>
 </body>
 </html>

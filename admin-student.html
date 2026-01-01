@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>학교 및 학생 성과 관리 | 관리자 센터</title>
+    <title>학생 및 성과 관리 | 관리자</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -16,114 +16,91 @@
         .status-fail { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="min-h-screen flex">
+<body class="min-h-screen">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0 h-screen sticky top-0">
-        <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">ADMIN ROOM</div>
-        <nav class="flex-grow px-4 space-y-2">
-            <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-                <i class="fas fa-chart-line"></i> 대시보드 요약
-            </a>
-            <a href="admin-home.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-                <i class="fas fa-image"></i> 배너/홈페이지 관리
-            </a>
-            <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-                <i class="fas fa-book"></i> 강의/과제 관리
-            </a>
-            <a href="admin-student.html" class="bg-indigo-600 flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-white shadow-lg">
-                <i class="fas fa-user-graduate"></i> 학교/학생 관리
-            </a>
-            <a href="admin-revenue.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-                <i class="fas fa-wallet"></i> 수입 관리
-            </a>
-        </nav>
-    </aside>
+    <div id="admin-root" class="flex w-full min-h-screen">
+        <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0 h-screen sticky top-0">
+            <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">ADMIN ROOM</div>
+            <nav class="flex-grow px-4 space-y-2">
+                <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-chart-line"></i> 대시보드 요약</a>
+                <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-book"></i> 강의/과제 관리</a>
+                <a href="admin-student.html" class="bg-indigo-600 flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-white shadow-lg"><i class="fas fa-user-graduate"></i> 학교/학생 관리</a>
+            </nav>
+        </aside>
 
-    <main class="flex-grow p-10 overflow-y-auto">
-        <header class="mb-10 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-black text-slate-900">Student & School</h1>
-                <p class="text-slate-500 font-medium">가입된 학생들의 이수율을 관리하고 학교 명단을 운영합니다.</p>
+        <main class="flex-grow p-10 overflow-y-auto">
+            <header class="mb-10 flex justify-between items-end">
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 uppercase">Student Management</h1>
+                    <p class="text-slate-500 font-medium">학생들의 이수율을 관리하고 학교/과목 리스트를 설정합니다.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg hover:bg-emerald-700 transition-all">
+                        <i class="fas fa-file-excel mr-2"></i> 학생 명단 추출
+                    </button>
+                    <div class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <span class="text-xs font-black text-slate-400 uppercase">Pass 기준</span>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="pass-threshold" value="80" oninput="loadStudents()" class="w-12 bg-slate-50 border-none rounded-lg p-2 text-center font-bold text-indigo-600">
+                            <span class="font-bold text-slate-700">%</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm w-fit border border-slate-100">
+                <button onclick="switchTab('status')" id="btn-status" class="tab-btn active px-6 py-3 rounded-xl text-sm font-black transition-all">학생 성취도</button>
+                <button onclick="switchTab('manage')" id="btn-manage" class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-slate-400 transition-all">조직/분류 관리</button>
             </div>
-            
-            <div class="flex gap-3">
-                <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-all">
-                    <i class="fas fa-file-excel mr-2"></i> 학생 명단 엑셀 추출
-                </button>
-                <div class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
-                    <span class="text-xs font-black text-slate-400 uppercase tracking-tighter">Pass 기준</span>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="pass-threshold" value="80" class="w-12 bg-slate-50 border-none rounded-lg p-2 text-center font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500">
-                        <span class="font-bold text-slate-700">%</span>
+
+            <div id="tab-status" class="tab-content active">
+                <div class="flex gap-4 mb-6">
+                    <select id="filter-school" onchange="loadStudents()" class="bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm outline-none">
+                        <option value="all">전체 학교</option>
+                    </select>
+                    <select id="filter-class" onchange="loadStudents()" class="bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm outline-none">
+                        <option value="all">전체 수강반</option>
+                    </select>
+                </div>
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <tr>
+                                <th class="p-8">학생정보(ID)</th>
+                                <th class="p-8">소속 학교</th>
+                                <th class="p-8">수강반</th>
+                                <th class="p-8">이수율</th>
+                                <th class="p-8">판정</th>
+                                <th class="p-8 text-right">삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-list-container" class="font-bold text-slate-700"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-manage" class="tab-content">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-black text-slate-800 mb-6 italic"><i class="fas fa-university mr-2"></i> 학교 생성</h3>
+                        <div class="flex gap-2 mb-8">
+                            <input type="text" id="new-school" placeholder="학교명 입력" class="flex-grow bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold outline-none">
+                            <button onclick="addItem('Schools', 'new-school')" class="bg-slate-900 text-white px-8 rounded-2xl font-bold text-sm">추가</button>
+                        </div>
+                        <div id="managed-school-list" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-black text-indigo-600 mb-6 italic"><i class="fas fa-tags mr-2"></i> 수업 분류 생성</h3>
+                        <div class="flex gap-2 mb-8">
+                            <input type="text" id="new-category" placeholder="과목명 입력" class="flex-grow bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold outline-none">
+                            <button onclick="addItem('SubjectCategories', 'new-category')" class="bg-indigo-600 text-white px-8 rounded-2xl font-bold text-sm">추가</button>
+                        </div>
+                        <div id="managed-category-list" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
-        </header>
-
-        <div class="flex gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm w-fit border border-slate-100">
-            <button onclick="switchTab('status')" id="btn-status" class="tab-btn active px-6 py-3 rounded-xl text-sm font-black transition-all">
-                <i class="fas fa-user-check mr-2"></i> 학생 성취도 (자동연동)
-            </button>
-            <button onclick="switchTab('school')" id="btn-school" class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-slate-400 transition-all">
-                <i class="fas fa-university mr-2"></i> 학교 명단 관리
-            </button>
-        </div>
-
-        <div id="tab-status" class="tab-content active">
-            <div class="flex gap-4 mb-6">
-                <select id="filter-school" class="bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm">
-                    <option value="all">전체 학교</option>
-                </select>
-                <select id="filter-class" class="bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm">
-                    <option value="all">전체 수강반</option>
-                    <option>토익 850반</option>
-                    <option>기초 중국어</option>
-                </select>
-            </div>
-
-            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        <tr>
-                            <th class="p-8">학생 정보</th>
-                            <th class="p-8">수강 중인 반</th>
-                            <th class="p-8">강의 이수율</th>
-                            <th class="p-8">P/F 판정</th>
-                            <th class="p-8 text-right">관리</th>
-                        </tr>
-                    </thead>
-                    <tbody id="student-list" class="text-sm font-bold text-slate-700">
-                        <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-all">
-                            <td class="p-8">김철수 <span class="block text-[10px] text-slate-400">대온고등학교</span></td>
-                            <td class="p-8 text-xs font-bold">토익 850반</td>
-                            <td class="p-8">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                        <div class="h-full bg-indigo-500" style="width: 85%"></div>
-                                    </div>
-                                    <span class="text-xs progress-val">85%</span>
-                                </div>
-                            </td>
-                            <td class="p-8"><span class="status-badge px-3 py-1 rounded-full text-[10px] font-black status-pass">PASS</span></td>
-                            <td class="p-8 text-right text-slate-300 hover:text-rose-500 cursor-pointer"><i class="fas fa-user-slash"></i></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="tab-school" class="tab-content">
-            <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100 max-w-xl">
-                <h3 class="text-xl font-black text-slate-800 mb-6 italic">Register School</h3>
-                <div class="flex gap-2 mb-8">
-                    <input type="text" id="new-school-name" placeholder="학교 이름 입력" class="flex-grow bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold outline-none">
-                    <button onclick="addSchool()" class="bg-slate-900 text-white px-8 rounded-2xl font-bold text-sm">추가</button>
-                </div>
-                <div id="managed-school-list" class="space-y-3">
-                    </div>
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -137,88 +114,98 @@
             messagingSenderId: "919552710378",
             appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // [원본 기능 유지] 탭 전환
-        window.switchTab = (tabId) => {
+        // 변수명 및 필드명 준수: userName, userId, school, userClass, progress
+        window.loadStudents = () => {
+            onSnapshot(query(collection(db, "Users"), orderBy("createdAt", "desc")), (snap) => {
+                const container = document.getElementById('student-list-container');
+                const fSch = document.getElementById('filter-school').value;
+                const fCls = document.getElementById('filter-class').value;
+                const threshold = parseInt(document.getElementById('pass-threshold').value) || 80;
+                const classSet = new Set();
+                
+                container.innerHTML = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    if(u.userId === 'eduthot') return; // 관리자 제외
+                    
+                    if(u.userClass) classSet.add(u.userClass);
+
+                    // 필터링
+                    if(fSch !== 'all' && u.school !== fSch) return;
+                    if(fCls !== 'all' && u.userClass !== fCls) return;
+
+                    const prog = u.progress || 0;
+                    const isPass = prog >= threshold;
+
+                    container.innerHTML += `
+                        <tr class="border-b border-slate-50 hover:bg-slate-50/50">
+                            <td class="p-8">${u.userName || '미입력'} <span class="text-[10px] text-slate-400">(${u.userId})</span></td>
+                            <td class="p-8 text-xs text-slate-500">${u.school || '-'}</td>
+                            <td class="p-8 text-xs text-indigo-600">${u.userClass || '-'}</td>
+                            <td class="p-8">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full bg-indigo-500" style="width:${prog}%"></div>
+                                    </div>
+                                    <span class="text-[11px]">${prog}%</span>
+                                </div>
+                            </td>
+                            <td class="p-8"><span class="px-3 py-1 rounded-full text-[10px] ${isPass ? 'status-pass' : 'status-fail'}">${isPass ? 'PASS' : 'FAIL'}</span></td>
+                            <td class="p-8 text-right text-slate-200 hover:text-rose-500 cursor-pointer" onclick="deleteItem('Users','${d.id}')"><i class="fas fa-trash-alt"></i></td>
+                        </tr>`;
+                });
+                
+                // 반 필터 업데이트
+                const clsSelect = document.getElementById('filter-class');
+                const current = clsSelect.value;
+                clsSelect.innerHTML = '<option value="all">전체 수강반</option>';
+                Array.from(classSet).sort().forEach(c => {
+                    clsSelect.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+                clsSelect.value = current;
+            });
+        };
+
+        window.addItem = async (col, inputId) => {
+            const val = document.getElementById(inputId).value.trim();
+            if(!val) return;
+            await addDoc(collection(db, col), { name: val, createdAt: new Date() });
+            document.getElementById(inputId).value = "";
+        };
+
+        window.deleteItem = async (col, id) => { if(confirm("삭제하시겠습니까?")) await deleteDoc(doc(db, col, id)); };
+
+        window.switchTab = (id) => {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('active');
-                b.classList.add('text-slate-400');
-            });
-            document.getElementById('tab-' + tabId).classList.add('active');
-            
-            // 현재 클릭된 버튼 활성화
-            const activeBtn = event.currentTarget;
-            activeBtn.classList.add('active');
-            activeBtn.classList.remove('text-slate-400');
+            document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-slate-400'); });
+            document.getElementById('tab-' + id).classList.add('active');
+            event.currentTarget.classList.add('active'); event.currentTarget.classList.remove('text-slate-400');
         };
 
-        // [원본 기능 유지] 엑셀 다운로드 (알림만)
-        window.downloadExcel = () => {
-            const school = document.getElementById('filter-school').value;
-            const className = document.getElementById('filter-class').value;
-            alert(`[${school} / ${className}] 필터가 적용된 학생 명단 엑셀 파일을 생성합니다.`);
-        };
-
-        // [DB 연동] 학교 추가
-        window.addSchool = async () => {
-            const nameInput = document.getElementById('new-school-name');
-            const name = nameInput.value.trim();
-            if(!name) return alert("학교 이름을 입력하세요.");
-
-            try {
-                await addDoc(collection(db, "Schools"), {
-                    name: name,
-                    createdAt: new Date()
+        const syncSettings = () => {
+            onSnapshot(query(collection(db, "Schools"), orderBy("createdAt", "desc")), (snap) => {
+                const list = document.getElementById('managed-school-list');
+                const filter = document.getElementById('filter-school');
+                list.innerHTML = ""; filter.innerHTML = '<option value="all">전체 학교</option>';
+                snap.forEach(d => {
+                    const n = d.data().name;
+                    list.innerHTML += `<div class="flex justify-between p-4 bg-slate-50 rounded-2xl text-sm font-bold"><span>${n}</span><button onclick="deleteItem('Schools','${d.id}')" class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button></div>`;
+                    filter.innerHTML += `<option value="${n}">${n}</option>`;
                 });
-                nameInput.value = "";
-            } catch (e) { alert("추가 실패: " + e); }
-        };
-
-        // [DB 연동] 학교 삭제
-        window.deleteSchool = async (id) => {
-            if(confirm("이 학교를 명단에서 삭제하시겠습니까?")) {
-                await deleteDoc(doc(db, "Schools", id));
-            }
-        };
-
-        // [핵심] 실시간 학교 로드 및 위/아래 UI 동시 업데이트
-        const initSchoolSync = () => {
-            const q = query(collection(db, "Schools"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const listArea = document.getElementById('managed-school-list');
-                const filterArea = document.getElementById('filter-school');
-
-                listArea.innerHTML = "";
-                filterArea.innerHTML = '<option value="all">전체 학교</option>';
-
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const id = docSnap.id;
-
-                    // 1. 하단 관리 명단 업데이트 (원본 디자인 유지)
-                    const itemHtml = `
-                        <div class="flex justify-between items-center bg-slate-50 p-5 rounded-2xl animate-in slide-in-from-top duration-300">
-                            <span class="font-bold text-slate-700">${data.name}</span>
-                            <button onclick="deleteSchool('${id}')" class="text-slate-200 hover:text-rose-500 transition-all">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>`;
-                    listArea.insertAdjacentHTML('beforeend', itemHtml);
-
-                    // 2. 상단 성취도 필터 업데이트
-                    const option = document.createElement('option');
-                    option.value = data.name;
-                    option.textContent = data.name;
-                    filterArea.appendChild(option);
+            });
+            onSnapshot(query(collection(db, "SubjectCategories"), orderBy("createdAt", "desc")), (snap) => {
+                const list = document.getElementById('managed-category-list');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    list.innerHTML += `<div class="flex justify-between p-4 bg-indigo-50/50 text-indigo-700 rounded-2xl text-sm font-bold"><span>${d.data().name}</span><button onclick="deleteItem('SubjectCategories','${d.id}')" class="text-indigo-200 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button></div>`;
                 });
             });
         };
 
-        window.onload = initSchoolSync;
+        window.onload = () => { syncSettings(); loadStudents(); };
     </script>
 </body>
 </html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 정보 관리 | EDU THOT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; }
+        .input-edit { @apply bg-white border border-slate-200 rounded-xl px-4 py-2 w-full font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 p-10 border border-slate-100">
+        <div class="mb-10 text-center">
+            <div class="w-20 h-20 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-2xl mx-auto mb-4 shadow-lg shadow-indigo-100" id="profile-initial">?</div>
+            <h2 class="text-2xl font-black text-slate-900">내 정보 관리</h2>
+            <p class="text-slate-400 text-sm mt-2 font-medium">정보를 확인하고 수정할 수 있습니다.</p>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 space-y-6">
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1 block">사용자 아이디 (변경불가)</label>
+                    <p id="display-id" class="font-bold text-slate-300 text-lg">불러오는 중...</p>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200/50">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1 block">이메일 주소</label>
+                    <input type="email" id="edit-email" class="input-edit" placeholder="이메일을 입력하세요">
+                </div>
+
+                <div class="pt-4 border-t border-slate-200/50">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1 block">전화번호</label>
+                    <input type="tel" id="edit-phone" class="input-edit" placeholder="010-0000-0000">
+                </div>
+            </div>
+
+            <button onclick="updateProfile()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                <i class="fas fa-check mr-2"></i>수정 내용 저장하기
+            </button>
+
+            <button onclick="location.href='my-room.html'" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-slate-800 transition-all">
+                나의 학습방으로 돌아가기
+            </button>
+
+            <div class="pt-8 mt-4 border-t border-slate-100 text-center">
+                <button onclick="handleWithdrawal()" class="text-rose-400 font-bold text-xs hover:text-rose-600">회원 탈퇴하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, updateDoc, deleteDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
+            authDomain: "eduthot-fb088.firebaseapp.com",
+            projectId: "eduthot-fb088",
+            storageBucket: "eduthot-fb088.firebasestorage.app",
+            messagingSenderId: "919552710378",
+            appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 로드 시 데이터 채우기
+        const userLogined = localStorage.getItem('userLogined');
+        if (!userLogined) location.href = 'login.html';
+        const userData = JSON.parse(userLogined);
+
+        document.getElementById('display-id').textContent = userData.userId;
+        document.getElementById('edit-email').value = userData.email || "";
+        document.getElementById('edit-phone').value = userData.phone || "";
+        document.getElementById('profile-initial').textContent = userData.userId.substring(0, 2).toUpperCase();
+
+        // [핵심] 프로필 수정 함수
+        window.updateProfile = async () => {
+            const newEmail = document.getElementById('edit-email').value;
+            const newPhone = document.getElementById('edit-phone').value;
+
+            try {
+                const q = query(collection(db, "Users"), where("userId", "==", userData.userId));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) return alert("사용자를 찾을 수 없습니다.");
+
+                const userDocId = querySnapshot.docs[0].id;
+                const userRef = doc(db, "Users", userDocId);
+
+                // 1. Firebase 업데이트
+                await updateDoc(userRef, {
+                    email: newEmail,
+                    phone: newPhone
+                });
+
+                // 2. 로컬 스토리지 데이터 동기화 (로그인 세션 유지용)
+                userData.email = newEmail;
+                userData.phone = newPhone;
+                localStorage.setItem('userLogined', JSON.stringify(userData));
+
+                alert("정보가 성공적으로 수정되었습니다!");
+            } catch (e) {
+                alert("수정 실패: " + e.message);
+            }
+        };
+
+        // 회원 탈퇴 (기존 유지)
+        window.handleWithdrawal = async () => {
+            if (confirm("정말로 탈퇴하시겠습니까? 데이터가 모두 삭제됩니다.")) {
+                const q = query(collection(db, "Users"), where("userId", "==", userData.userId));
+                const querySnapshot = await getDocs(q);
+                await deleteDoc(doc(db, "Users", querySnapshot.docs[0].id));
+                localStorage.removeItem('userLogined');
+                alert("탈퇴 완료되었습니다.");
+                location.href = "index.html";
+            }
+        };
+    </script>
+</body>
+</html>
