@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈페이지 관리 | 관리자 센터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f1f5f9; }
+    </style>
+</head>
+<body class="min-h-screen flex">
+
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0">
+    <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">
+        ADMIN ROOM
+    </div>
+
+    <nav class="flex-grow px-4 space-y-2">
+        <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+            <i class="fas fa-chart-line"></i> 대시보드 요약
+        </a>
+        <a href="admin-home.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+            <i class="fas fa-image"></i> 배너/홈페이지 관리
+        </a>
+        <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+            <i class="fas fa-book"></i> 강의/과제 관리
+        </a>
+        <a href="admin-student.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+            <i class="fas fa-user-graduate"></i> 학교/학생 관리
+        </a>
+        <a href="admin-revenue.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+            <i class="fas fa-wallet"></i> 수입 관리
+        </a>
+    </nav>
+</aside>
+
+    <main class="flex-grow p-10 overflow-y-auto">
+        <div class="max-w-4xl">
+            <header class="mb-10">
+                <h1 class="text-3xl font-black text-slate-900">배너/홈페이지 관리</h1>
+                <p class="text-slate-500 font-medium">메인 배너 이미지를 교체하고 노출 강의를 설정합니다.</p>
+            </header>
+
+            <section class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 mb-8">
+                <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-images text-indigo-500"></i> 메인 회전 배너(Slide) 관리
+                    </div>
+                    <button class="text-xs bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl hover:bg-indigo-100">+ 슬라이드 추가</button>
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-black text-indigo-600 uppercase tracking-widest">Slide 01</span>
+                            <button class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 mb-2">이미지 파일 경로 (URL)</label>
+                                <input type="text" value="https://images.unsplash.com/photo-1516321318423-f06f85e504b3" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 mb-2">연결 링크 (클릭 시 이동)</label>
+                                <input type="text" value="lecture-list.html" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-black text-indigo-600 uppercase tracking-widest">Slide 02</span>
+                            <button class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 mb-2">이미지 파일 경로 (URL)</label>
+                                <input type="text" placeholder="두 번째 배너 이미지 주소" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 mb-2">연결 링크 (클릭 시 이동)</label>
+                                <input type="text" placeholder="https://..." class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 mb-8">
+                <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-star text-amber-500"></i> 메인 하단 추천 강의 관리
+                    </div>
+                    <button class="text-xs bg-amber-50 text-amber-600 px-4 py-2 rounded-xl hover:bg-amber-100">+ 추천 강의 추가</button>
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <span class="w-8 h-8 bg-white rounded-full flex items-center justify-center font-black text-[10px] text-slate-400 shadow-sm shrink-0">01</span>
+                        <select class="flex-grow bg-transparent border-none text-sm font-bold focus:ring-0">
+                            <option value="">노출할 강의를 선택하세요</option>
+                            <option value="1" selected>토익 기출 유형 100제 완성</option>
+                            <option value="2">기초 중국어 회화</option>
+                            <option value="3">오픽 실전 대비반</option>
+                        </select>
+                        <button class="text-slate-300 hover:text-rose-500 px-2 transition-colors">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <span class="w-8 h-8 bg-white rounded-full flex items-center justify-center font-black text-[10px] text-slate-400 shadow-sm shrink-0">02</span>
+                        <select class="flex-grow bg-transparent border-none text-sm font-bold focus:ring-0">
+                            <option value="">노출할 강의를 선택하세요</option>
+                            <option value="1">토익 기출 유형 100제 완성</option>
+                            <option value="2" selected>기초 중국어 회화</option>
+                            <option value="3">오픽 실전 대비반</option>
+                        </select>
+                        <button class="text-slate-300 hover:text-rose-500 px-2 transition-colors">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="mt-4 text-[11px] text-slate-400">
+                    <i class="fas fa-info-circle mr-1"></i> 메인 페이지 하단에 노출될 우선순위 순서대로 배치하세요.
+                </p>
+            </section>
+<script>
+    // 1. 배너 슬라이드 추가 함수
+    function addSlide() {
+        const container = document.querySelector('.space-y-4'); // 슬라이드들이 담긴 곳
+        const slideCount = container.querySelectorAll('.bg-slate-50').length + 1;
+        
+        const newSlide = document.createElement('div');
+        newSlide.className = 'p-6 bg-slate-50 rounded-3xl border border-slate-100';
+        newSlide.innerHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs font-black text-indigo-600 uppercase tracking-widest">Slide ${slideCount < 10 ? '0' + slideCount : slideCount}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 mb-2">이미지 파일 경로 (URL)</label>
+                    <input type="text" placeholder="이미지 주소를 입력하세요" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 mb-2">연결 링크 (클릭 시 이동)</label>
+                    <input type="text" placeholder="https://..." class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+        `;
+        container.appendChild(newSlide);
+    }
+
+    // 2. 추천 강의 추가 함수
+    function addRecommend() {
+        const container = document.querySelector('section:nth-of-type(2) .space-y-4');
+        const recommendCount = container.children.length + 1;
+        
+        const newRecommend = document.createElement('div');
+        newRecommend.className = 'flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100';
+        newRecommend.innerHTML = `
+            <span class="w-8 h-8 bg-white rounded-full flex items-center justify-center font-black text-[10px] text-slate-400 shadow-sm shrink-0">${recommendCount < 10 ? '0' + recommendCount : recommendCount}</span>
+            <select class="flex-grow bg-transparent border-none text-sm font-bold focus:ring-0">
+                <option value="">노출할 강의를 선택하세요</option>
+                <option value="1">토익 기출 유형 100제 완성</option>
+                <option value="2">기초 중국어 회화</option>
+                <option value="3">오픽 실전 대비반</option>
+            </select>
+            <button onclick="this.parentElement.remove()" class="text-slate-300 hover:text-rose-500 px-2 transition-colors">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        `;
+        container.appendChild(newRecommend);
+    }
+
+    // 버튼에 기능 연결 (HTML에 있는 버튼을 찾아 클릭 이벤트 부여)
+    document.querySelectorAll('button').forEach(btn => {
+        if(btn.innerText.includes('슬라이드 추가')) btn.onclick = addSlide;
+        if(btn.innerText.includes('추천 강의 추가')) btn.onclick = addRecommend;
+        // 기존 쓰레기통 버튼에도 삭제 기능 연결
+        if(btn.querySelector('.fa-trash-alt')) {
+            btn.onclick = function() { this.parentElement.parentElement.remove(); }
+        }
+    });
+</script>
+            <div class="flex justify-end gap-4">
+                <button onclick="alert('변경사항이 저장되었습니다!')" class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all">설정 저장하기</button>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

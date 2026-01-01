@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수입 관리 | 관리자 센터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f1f5f9; }
+        .card { @apply bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100; }
+        .filter-select { @apply bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none; }
+    </style>
+</head>
+<body class="min-h-screen flex">
+
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0">
+        <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">ADMIN ROOM</div>
+        <nav class="flex-grow px-4 space-y-2">
+            <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+                <i class="fas fa-chart-line"></i> 대시보드 요약
+            </a>
+            <a href="admin-home.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+                <i class="fas fa-image"></i> 배너/홈페이지 관리
+            </a>
+            <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+                <i class="fas fa-book"></i> 강의/과제 관리
+            </a>
+            <a href="admin-student.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
+                <i class="fas fa-user-graduate"></i> 학교/학생 관리
+            </a>
+            <a href="admin-revenue.html" class="bg-indigo-600 text-white shadow-lg flex items-center gap-3 p-4 rounded-xl text-sm font-bold">
+                <i class="fas fa-wallet"></i> 수입 관리
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow p-10 overflow-y-auto">
+        <header class="mb-10 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 uppercase">Revenue & Settlement</h1>
+                <p class="text-slate-500 font-medium">정산 기간 설정 및 무통장 입금을 승인합니다.</p>
+            </div>
+            <button class="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg shadow-emerald-50">
+                <i class="fas fa-file-excel mr-2"></i> 엑셀 다운로드
+            </button>
+        </header>
+
+        <div class="card mb-8">
+            <div class="flex flex-wrap gap-6 items-end">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1">조회 기간</label>
+                    <div class="flex items-center gap-2">
+                        <input type="date" class="filter-select">
+                        <span class="text-slate-300">~</span>
+                        <input type="date" class="filter-select">
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1">학교/수업 선택</label>
+                    <div class="flex gap-2">
+                        <select class="filter-select"><option>전체 학교</option></select>
+                        <select class="filter-select"><option>전체 수업</option></select>
+                    </div>
+                </div>
+                <button class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-800 transition-all">
+                    필터 적용
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div class="card bg-slate-900 text-white border-none">
+                <p class="text-[10px] font-black opacity-50 uppercase mb-2">기간 내 총 매출</p>
+                <h3 class="text-2xl font-black">₩ 12,450,000</h3>
+            </div>
+            <div class="card">
+                <p class="text-[10px] font-black text-slate-400 uppercase mb-2">결제 완료</p>
+                <h3 class="text-2xl font-black text-slate-900">124 건</h3>
+            </div>
+            <div class="card">
+                <p class="text-[10px] font-black text-slate-400 uppercase mb-2">입금 대기중</p>
+                <h3 class="text-2xl font-black text-orange-500">08 건</h3>
+            </div>
+        </div>
+
+        <div class="card !p-0 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50/50">
+                    <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <th class="p-6">결제일시</th>
+                        <th class="p-6">학생(학교)</th>
+                        <th class="p-6">수강 과목</th>
+                        <th class="p-6">금액</th>
+                        <th class="p-6">상태</th>
+                        <th class="p-6 text-right">관리</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm font-bold text-slate-700 divide-y divide-slate-50">
+                    <tr class="bg-orange-50/20">
+                        <td class="p-6 text-xs text-slate-400">2026-01-01 14:00</td>
+                        <td class="p-6">홍길동 <span class="text-[10px] text-orange-500 block">혁신중</span></td>
+                        <td class="p-6">기초 중국어</td>
+                        <td class="p-6">₩ 80,000</td>
+                        <td class="p-6"><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px]">입금대기</span></td>
+                        <td class="p-6 text-right">
+                            <button onclick="confirm('승인하시겠습니까?')" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] hover:bg-indigo-600 transition-all">입금승인</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-6 text-xs text-slate-400">2026-01-01 13:45</td>
+                        <td class="p-6">이영희 <span class="text-[10px] text-indigo-500 block">대온고</span></td>
+                        <td class="p-6">토익 850반</td>
+                        <td class="p-6">₩ 120,000</td>
+                        <td class="p-6"><span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px]">결제완료</span></td>
+                        <td class="p-6 text-right text-slate-300 text-[10px]">카드승인</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>
