@@ -14,6 +14,14 @@
         .filter-btn { @apply px-7 py-3 bg-white text-slate-500 border border-slate-100 rounded-2xl font-bold text-sm shrink-0 hover:bg-slate-50 transition-all; }
         .lecture-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .img-placeholder { background-color: #e2e8f0; position: relative; overflow: hidden; }
+        
+        /* 라이브 애니메이션 효과 추가 */
+        .live-dot { animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -40,14 +48,15 @@
     <main class="max-w-6xl mx-auto p-6 mt-8">
         <div class="mb-12">
             <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">수강신청</h1>
-            <p class="text-slate-400 mt-3 font-medium italic">당신을 위한 최적의 어학 강좌가 실시간으로 업데이트됩니다.</p>
+            <p class="text-slate-400 mt-3 font-medium italic">등록된 수업 카테고리별로 강좌를 확인하세요.</p>
         </div>
 
         <div id="filter-area" class="flex gap-3 mb-12 overflow-x-auto pb-4 no-scrollbar">
             <button onclick="filterLectures('all', this)" class="filter-btn active">전체</button>
         </div>
 
-        <div id="lecture-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+        <div id="lecture-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        </div>
     </main>
 
     <script type="module">
@@ -67,29 +76,22 @@
 
         window.currentCategory = 'all';
 
-        // [수정 완료] 메인 페이지와 동일하게 userId를 표시하도록 수정
         const checkUser = () => {
             const userLogined = localStorage.getItem('userLogined');
             const display = document.getElementById('display-user-name');
-            
             if (userLogined) {
                 const userData = JSON.parse(userLogined);
-                if (userData.userId === 'eduthot') {
-                    display.innerText = "👑 관리자님";
-                } else {
-                    // 메인 페이지(index.html) 로직과 동일하게 userId님으로 표시
-                    display.innerText = `👤 ${userData.userId}님`;
-                }
+                display.innerText = userData.userId === 'eduthot' ? "👑 관리자님" : `👤 ${userData.userId}님`;
             }
         };
 
         const loadFilters = () => {
-            onSnapshot(collection(db, "Schools"), (snap) => {
-                const filterArea = document.getElementById('filter-area');
+            const filterArea = document.getElementById('filter-area');
+            onSnapshot(query(collection(db, "SubjectCategories"), orderBy("createdAt", "desc")), (snap) => {
                 filterArea.innerHTML = `<button onclick="filterLectures('all', this)" class="filter-btn active">전체</button>`;
                 snap.forEach(doc => {
-                    const schoolName = doc.data().name;
-                    filterArea.innerHTML += `<button onclick="filterLectures('${schoolName}', this)" class="filter-btn">${schoolName}</button>`;
+                    const name = doc.data().name;
+                    filterArea.innerHTML += `<button onclick="filterLectures('${name}', this)" class="filter-btn">${name}</button>`;
                 });
             });
         };
@@ -99,51 +101,72 @@
             onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('lecture-container');
                 container.innerHTML = ""; 
+                
                 if (snapshot.empty) {
                     container.innerHTML = "<div class='col-span-full text-center py-20 text-slate-400 font-bold'>현재 수강 가능한 강의가 없습니다.</div>";
                     return;
                 }
+
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const id = docSnap.id;
                     const courseImg = data.img || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800";
-                    const courseDesc = data.description || "나를 위한 최적의 커리큘럼으로 학습을 시작하세요.";
-                    const category = data.targetSchool || "공통";
+                    const category = data.category || "전체";
+                    
+                    const type = data.type || "VOD";
+                    const level = data.level || "입문";
 
                     const card = document.createElement('div');
                     card.className = "lecture-card";
                     card.setAttribute('data-category', category);
+                    
+                    const liveBadge = type === 'LIVE' 
+                        ? `<span class="flex items-center gap-1.5 text-[10px] font-black bg-rose-50 text-rose-500 px-3 py-1 rounded-lg uppercase tracking-wider">
+                            <span class="w-1.5 h-1.5 bg-rose-500 rounded-full live-dot"></span>LIVE
+                           </span>`
+                        : `<span class="text-[10px] font-black bg-blue-50 text-blue-500 px-3 py-1 rounded-lg uppercase tracking-wider">VOD</span>`;
+
                     card.innerHTML = `
-                        <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all h-full flex flex-col">
+                        <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all h-full flex flex-col relative">
                             <div class="h-52 img-placeholder overflow-hidden">
                                 <img src="${courseImg}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" onerror="this.src='https://via.placeholder.com/800x500?text=No+Image'">
                             </div>
                             <div class="p-8 flex-grow flex flex-col">
-                                <div class="flex gap-2 mb-4">
-                                    <span class="text-[10px] font-black bg-indigo-50 text-indigo-500 px-3 py-1 rounded-lg uppercase tracking-wider">${category}</span>
-                                    <span class="text-[10px] font-black bg-slate-50 text-slate-400 px-3 py-1 rounded-lg uppercase tracking-wider">OPEN</span>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-[10px] font-black bg-emerald-50 text-emerald-500 px-3 py-1 rounded-lg uppercase tracking-wider">${category}</span>
+                                    ${liveBadge}
+                                    <span class="text-[10px] font-black bg-amber-50 text-amber-600 px-3 py-1 rounded-lg uppercase tracking-wider">${level}</span>
                                 </div>
-                                <h3 class="text-xl font-black text-slate-800 mb-2 leading-tight">${data.name}</h3>
-                                <p class="text-sm text-slate-400 font-medium mb-6 line-clamp-2">${courseDesc}</p>
+                                <h3 class="text-xl font-black text-slate-800 mb-2 leading-tight flex items-center gap-2">
+                                    ${data.name}
+                                </h3>
+                                <p class="text-sm text-slate-400 font-medium mb-6 line-clamp-2">${data.description || '강의 설명을 확인하세요.'}</p>
                                 <div class="mt-auto flex justify-between items-center pt-6 border-t border-slate-50">
                                     <span class="text-2xl font-black text-slate-900">₩${Number(data.price || 0).toLocaleString()}</span>
-                                    <button onclick="location.href='lecture-detail.html?id=${id}'" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black text-xs hover:bg-indigo-600 transition-all shadow-lg shadow-slate-100">신청하기</button>
+                                    <button onclick="location.href='enroll.html?id=${id}'" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black text-xs hover:bg-indigo-600 transition-all shadow-lg shadow-slate-100">신청하기</button>
                                 </div>
                             </div>
                         </div>`;
-                    if (window.currentCategory !== 'all' && category !== window.currentCategory) card.style.display = 'none';
                     container.appendChild(card);
                 });
+                
+                filterLectures(window.currentCategory);
             });
         };
 
-        window.filterLectures = (category, btn) => {
-            window.currentCategory = category;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
+        window.filterLectures = (keyword, btn) => {
+            window.currentCategory = keyword;
+            if(btn) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
             document.querySelectorAll('.lecture-card').forEach(card => {
-                const cardCat = card.getAttribute('data-category');
-                card.style.display = (category === 'all' || cardCat === category) ? 'block' : 'none';
+                const cat = card.getAttribute('data-category');
+                if (keyword === 'all' || cat === keyword) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
             });
         };
 

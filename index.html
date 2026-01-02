@@ -11,8 +11,10 @@
         body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
         .menu-card { transition: all 0.3s ease; cursor: pointer; }
         .menu-card:hover { transform: translateY(-5px); border-color: #4f46e5; }
-        /* 로그아웃 버튼용 스타일 추가 */
         .logout-btn { @apply text-xs font-bold text-red-400 hover:text-red-600 ml-3 underline cursor-pointer; }
+        
+        /* 슬라이드 애니메이션을 위한 스타일 */
+        .slide-item { transition: opacity 1s ease-in-out; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -39,14 +41,22 @@
     </nav>
 
     <main class="max-w-6xl mx-auto p-6 mt-4">
-        <div class="relative h-48 md:h-80 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-indigo-100 mb-12">
-            <img src="https://images.unsplash.com/photo-1523240715639-99f2d02a122c?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-r from-indigo-900/90 via-indigo-900/40 to-transparent flex flex-col justify-center px-8 md:px-16 text-white">
-                <h2 class="text-2xl md:text-5xl font-black leading-tight">2026 어학 정복<br>강사님과 함께하세요</h2>
-                <p class="text-xs md:text-xl opacity-90 mt-4 font-light text-indigo-100">나스닥 연금처럼 탄탄한 실력 향상 시스템</p>
+        <div class="relative h-64 md:h-[450px] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-indigo-100 mb-12 bg-slate-200">
+            <div id="slider-content" class="w-full h-full relative">
+                <div class="absolute inset-0 flex items-center justify-center text-slate-400 font-bold">
+                    배너를 불러오는 중...
+                </div>
             </div>
-        </div>
 
+            <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white transition-all backdrop-blur-sm">
+                <i class="fas fa-chevron-left text-sm md:text-base"></i>
+            </button>
+            <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white transition-all backdrop-blur-sm">
+                <i class="fas fa-chevron-right text-sm md:text-base"></i>
+            </button>
+
+            <div id="slider-dots" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2"></div>
+        </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
             <a href="lecture-list.html?category=TOEIC" class="menu-card bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center gap-4 hover:shadow-xl transition-all group">
                 <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
@@ -106,14 +116,98 @@
         </section>
     </main>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
+            authDomain: "eduthot-fb088.firebaseapp.com",
+            projectId: "eduthot-fb088",
+            storageBucket: "eduthot-fb088.firebasestorage.app",
+            messagingSenderId: "919552710378",
+            appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentIndex = 0;
+        let slides = [];
+        let slideTimer;
+
+        // 1. 실시간 배너 데이터 가져오기
+        onSnapshot(doc(db, "SiteSettings", "mainBanner"), (snap) => {
+            if (snap.exists() && snap.data().slides) {
+                slides = snap.data().slides;
+                renderSlider();
+                startAutoSlide();
+            }
+        });
+
+        // 2. 슬라이드 렌더링
+        function renderSlider() {
+            const content = document.getElementById('slider-content');
+            const dots = document.getElementById('slider-dots');
+            
+            if (slides.length === 0) {
+                content.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400 font-bold">등록된 배너가 없습니다.</div>`;
+                return;
+            }
+
+            // 슬라이드 HTML 생성
+            content.innerHTML = slides.map((slide, idx) => `
+                <div class="slide-item absolute inset-0 ${idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}" 
+                     style="background-image: url('${slide.imgUrl}'); background-size: cover; background-position: center;">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-900/80 via-indigo-900/40 to-transparent"></div>
+                    <div class="relative z-20 h-full flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-2xl md:text-5xl font-black leading-tight drop-shadow-lg">
+                            ${slide.text.replace(/\n/g, '<br>')}
+                        </h2>
+                    </div>
+                </div>
+            `).join('');
+
+            // 하단 점 표시
+            dots.innerHTML = slides.map((_, idx) => `
+                <div class="w-2 h-2 rounded-full transition-all duration-500 ${idx === currentIndex ? 'bg-white w-8' : 'bg-white/40'}"></div>
+            `).join('');
+        }
+
+        // 3. 제어 함수
+        window.nextSlide = () => {
+            if (slides.length <= 1) return;
+            currentIndex = (currentIndex + 1) % slides.length;
+            renderSlider();
+            startAutoSlide(); // 조작 시 타이머 리셋
+        };
+
+        window.prevSlide = () => {
+            if (slides.length <= 1) return;
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            renderSlider();
+            startAutoSlide();
+        };
+
+        function startAutoSlide() {
+            clearInterval(slideTimer);
+            if (slides.length > 1) {
+                slideTimer = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % slides.length;
+                    renderSlider();
+                }, 5000); // 5초마다 전환
+            }
+        }
+    </script>
+
     <script>
+        // 로그인/로그아웃 로직 (기존 유지)
         document.addEventListener('DOMContentLoaded', () => {
             const authArea = document.getElementById('auth-area');
             const userLogined = localStorage.getItem('userLogined');
 
             if (userLogined) {
                 const userData = JSON.parse(userLogined);
-                // 로그인 상태일 때: "사용자명(학교) | 로그아웃" 표시
                 authArea.innerHTML = `
                     <div class="flex items-center gap-2">
                         <div class="text-right hidden sm:block">
@@ -129,12 +223,11 @@
             }
         });
 
-        // 로그아웃 처리 함수
         function handleLogout() {
             if (confirm("로그아웃 하시겠습니까?")) {
                 localStorage.removeItem('userLogined');
                 alert("로그아웃 되었습니다.");
-                location.reload(); // 페이지 새로고침하여 원래 버튼으로 복구
+                location.reload();
             }
         }
     </script>

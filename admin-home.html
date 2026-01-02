@@ -9,42 +9,16 @@
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         body { font-family: 'Pretendard', sans-serif; background-color: #f1f5f9; }
-        /* 보안 검사 전까지 화면을 숨깁니다 */
         .admin-page-root { display: none; }
     </style>
 </head>
 <body class="min-h-screen flex">
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentUser = JSON.parse(localStorage.getItem('userLogined'));
-            
-            // 1. 관리자 권한 검사 (eduthot만 허용)
-            if (!currentUser || currentUser.userId !== 'eduthot') {
-                alert("⚠️ 관리자 권한이 없습니다. 메인으로 이동합니다.");
-                location.href = "index.html"; 
-            } else {
-                // 관리자 확인 완료 시 화면 표시
-                document.querySelector('.admin-page-root').style.display = 'flex';
-            }
-        });
-
-        // 2. 로그아웃 함수
-        function handleLogout() {
-            if (confirm("로그아웃 하시겠습니까?")) {
-                localStorage.removeItem('userLogined');
-                alert("로그아웃 되었습니다.");
-                location.href = "index.html";
-            }
-        }
-    </script>
 
     <div class="admin-page-root w-full min-h-screen flex">
         <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0">
             <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">
                 ADMIN ROOM
             </div>
-
             <nav class="flex-grow px-4 space-y-2">
                 <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
                     <i class="fas fa-chart-line"></i> 대시보드 요약
@@ -55,14 +29,7 @@
                 <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
                     <i class="fas fa-book"></i> 강의/과제 관리
                 </a>
-                <a href="admin-student.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-                    <i class="fas fa-user-graduate"></i> 학교/학생 관리
-                </a>
-                <a href="admin-revenue.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all">
-                    <i class="fas fa-wallet"></i> 수입 관리
-                </a>
             </nav>
-
             <div class="p-6 border-t border-slate-800">
                 <button onclick="handleLogout()" class="flex items-center gap-2 text-xs font-bold text-rose-400 hover:text-rose-300 transition-all w-full">
                     <i class="fas fa-sign-out-alt"></i> 로그아웃
@@ -75,163 +42,155 @@
                 <header class="mb-10 flex justify-between items-center">
                     <div>
                         <h1 class="text-3xl font-black text-slate-900">배너/홈페이지 관리</h1>
-                        <p class="text-slate-500 font-medium">메인 배너 이미지를 교체하고 노출 강의를 설정합니다.</p>
+                        <p id="status-msg" class="text-slate-500 font-medium italic">시스템 준비 완료</p>
                     </div>
-                    <button onclick="handleLogout()" class="bg-white p-3 rounded-xl border border-slate-100 text-slate-400 hover:text-rose-500 transition-all shadow-sm">
-                        <i class="fas fa-power-off"></i>
-                    </button>
                 </header>
 
-                <section class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 mb-8">
-                    <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-images text-indigo-500"></i> 메인 회전 배너(Slide) 관리
-                        </div>
-                        <button class="text-xs bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl hover:bg-indigo-100">+ 슬라이드 추가</button>
-                    </h3>
-
-                    <div class="space-y-4">
-                        <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="text-xs font-black text-indigo-600 uppercase tracking-widest">Slide 01</span>
-                                <button class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 mb-2">이미지 파일 경로 (URL)</label>
-                                    <input type="text" value="https://images.unsplash.com/photo-1516321318423-f06f85e504b3" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 mb-2">연결 링크 (클릭 시 이동)</label>
-                                    <input type="text" value="lecture-list.html" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="text-xs font-black text-indigo-600 uppercase tracking-widest">Slide 02</span>
-                                <button class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 mb-2">이미지 파일 경로 (URL)</label>
-                                    <input type="text" placeholder="두 번째 배너 이미지 주소" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 mb-2">연결 링크 (클릭 시 이동)</label>
-                                    <input type="text" placeholder="https://..." class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 mb-8">
-                    <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-star text-amber-500"></i> 메인 하단 추천 강의 관리
-                        </div>
-                        <button class="text-xs bg-amber-50 text-amber-600 px-4 py-2 rounded-xl hover:bg-amber-100">+ 추천 강의 추가</button>
-                    </h3>
-
-                    <div class="recommend-container space-y-4">
-                        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <span class="w-8 h-8 bg-white rounded-full flex items-center justify-center font-black text-[10px] text-slate-400 shadow-sm shrink-0">01</span>
-                            <select class="flex-grow bg-transparent border-none text-sm font-bold focus:ring-0">
-                                <option value="">노출할 강의를 선택하세요</option>
-                                <option value="1" selected>토익 기출 유형 100제 완성</option>
-                                <option value="2">기초 중국어 회화</option>
-                                <option value="3">오픽 실전 대비반</option>
-                            </select>
-                            <button class="text-slate-300 hover:text-rose-500 px-2 transition-colors">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <span class="w-8 h-8 bg-white rounded-full flex items-center justify-center font-black text-[10px] text-slate-400 shadow-sm shrink-0">02</span>
-                            <select class="flex-grow bg-transparent border-none text-sm font-bold focus:ring-0">
-                                <option value="">노출할 강의를 선택하세요</option>
-                                <option value="1">토익 기출 유형 100제 완성</option>
-                                <option value="2" selected>기초 중국어 회화</option>
-                                <option value="3">오픽 실전 대비반</option>
-                            </select>
-                            <button class="text-slate-300 hover:text-rose-500 px-2 transition-colors">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
+                <section class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100 mb-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-images text-indigo-500"></i> 메인 슬라이드 관리
+                        </h3>
+                        <input type="file" id="banner-file" class="hidden" accept="image/*">
+                        <button id="add-btn" onclick="document.getElementById('banner-file').click()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                            <i class="fas fa-plus mr-2"></i>새 슬라이드 추가
+                        </button>
                     </div>
 
-                    <p class="mt-4 text-[11px] text-slate-400">
-                        <i class="fas fa-info-circle mr-1"></i> 메인 페이지 하단에 노출될 우선순위 순서대로 배치하세요.
-                    </p>
+                    <div id="slide-container" class="space-y-4">
+                        <div class="text-center py-10 text-slate-400 font-medium">데이터를 불러오는 중...</div>
+                    </div>
                 </section>
-
-                <div class="flex justify-end gap-4">
-                    <button onclick="alert('변경사항이 저장되었습니다!')" class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all">설정 저장하기</button>
-                </div>
             </div>
         </main>
     </div>
 
-    <script>
-        // 1. 배너 슬라이드 추가 함수
-        function addSlide() {
-            const container = document.querySelector('.space-y-4'); 
-            const slideCount = container.querySelectorAll('.bg-slate-50').length + 1;
-            
-            const newSlide = document.createElement('div');
-            newSlide.className = 'p-6 bg-slate-50 rounded-3xl border border-slate-100';
-            newSlide.innerHTML = `
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-xs font-black text-indigo-600 uppercase tracking-widest">Slide ${slideCount < 10 ? '0' + slideCount : slideCount}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 mb-2">이미지 파일 경로 (URL)</label>
-                        <input type="text" placeholder="이미지 주소를 입력하세요" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 mb-2">연결 링크 (클릭 시 이동)</label>
-                        <input type="text" placeholder="https://..." class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-            `;
-            container.appendChild(newSlide);
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // 2. 추천 강의 추가 함수
-        function addRecommend() {
-            const container = document.querySelector('.recommend-container');
-            const recommendCount = container.children.length + 1;
-            
-            const newRecommend = document.createElement('div');
-            newRecommend.className = 'flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100';
-            newRecommend.innerHTML = `
-                <span class="w-8 h-8 bg-white rounded-full flex items-center justify-center font-black text-[10px] text-slate-400 shadow-sm shrink-0">${recommendCount < 10 ? '0' + recommendCount : recommendCount}</span>
-                <select class="flex-grow bg-transparent border-none text-sm font-bold focus:ring-0">
-                    <option value="">노출할 강의를 선택하세요</option>
-                    <option value="1">토익 기출 유형 100제 완성</option>
-                    <option value="2">기초 중국어 회화</option>
-                    <option value="3">오픽 실전 대비반</option>
-                </select>
-                <button onclick="this.parentElement.remove()" class="text-slate-300 hover:text-rose-500 px-2 transition-colors">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            `;
-            container.appendChild(newRecommend);
-        }
+        // 강사님 Firebase 설정 정보 (수정 금지)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
+            authDomain: "eduthot-fb088.firebaseapp.com",
+            projectId: "eduthot-fb088",
+            storageBucket: "eduthot-fb088.firebasestorage.app",
+            messagingSenderId: "919552710378",
+            appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
+        };
 
-        // 버튼에 기능 연결
-        document.querySelectorAll('button').forEach(btn => {
-            if(btn.innerText.includes('슬라이드 추가')) btn.onclick = addSlide;
-            if(btn.innerText.includes('추천 강의 추가')) btn.onclick = addRecommend;
-            if(btn.querySelector('.fa-trash-alt')) {
-                btn.onclick = function() { this.parentElement.parentElement.remove(); }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // 1. 실시간 데이터 로드 (문서 자동 생성 기능 포함)
+        onSnapshot(doc(db, "SiteSettings", "mainBanner"), (snap) => {
+            const container = document.getElementById('slide-container');
+            if (snap.exists()) {
+                const slides = snap.data().slides || [];
+                renderSlides(slides);
+            } else {
+                // 문서가 없으면 초기 빈 배열 생성
+                setDoc(doc(db, "SiteSettings", "mainBanner"), { slides: [] });
+                container.innerHTML = `<div class="text-center py-10 text-slate-400">슬라이드를 추가해주세요.</div>`;
             }
         });
+
+        function renderSlides(slides) {
+            const container = document.getElementById('slide-container');
+            container.innerHTML = slides.length ? "" : `<div class="text-center py-10 text-slate-400">등록된 슬라이드가 없습니다.</div>`;
+
+            slides.forEach((slide, index) => {
+                const item = document.createElement('div');
+                item.className = "flex flex-col md:flex-row gap-6 p-6 bg-slate-50 rounded-3xl border border-slate-100 group transition-all hover:bg-white hover:shadow-md";
+                item.innerHTML = `
+                    <div class="w-full md:w-48 h-28 bg-white rounded-2xl overflow-hidden shrink-0 shadow-inner">
+                        <img src="${slide.imgUrl}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-grow flex flex-col justify-between py-1">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">Banner Text</label>
+                            <input type="text" value="${slide.text}" 
+                                onchange="window.updateText(${index}, this.value)"
+                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div class="flex justify-end mt-4 md:mt-0">
+                            <button onclick="window.removeSlide(${index})" class="text-xs font-bold text-rose-400 hover:text-rose-600 flex items-center gap-1">
+                                <i class="fas fa-trash-alt"></i> 삭제
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // 2. 파일 업로드 및 추가
+        document.getElementById('banner-file').onchange = async (e) => {
+            const file = e.target.files[0];
+            const btn = document.getElementById('add-btn');
+            const statusMsg = document.getElementById('status-msg');
+            if (!file) return;
+
+            try {
+                btn.disabled = true;
+                statusMsg.innerText = "⏳ 사진 업로드 중...";
+                
+                const fileName = `banners/${Date.now()}_${file.name}`;
+                const storageRef = ref(storage, fileName);
+                
+                // Storage 업로드
+                const uploadResult = await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(uploadResult.ref);
+
+                // DB 업데이트 (기존 데이터를 가져온 뒤 추가)
+                const docRef = doc(db, "SiteSettings", "mainBanner");
+                const snap = await getDoc(docRef);
+                const currentSlides = snap.exists() ? (snap.data().slides || []) : [];
+                
+                await setDoc(docRef, {
+                    slides: [...currentSlides, {
+                        imgUrl: url,
+                        text: "새로운 홍보 문구",
+                        createdAt: new Date()
+                    }]
+                });
+                
+                statusMsg.innerText = "✅ 업로드 완료!";
+            } catch (err) {
+                console.error("상세 오류 내역:", err);
+                alert("오류 발생! Firebase Storage의 'Rules'가 허용(true) 상태인지 확인하세요.");
+                statusMsg.innerText = "❌ 오류가 발생했습니다.";
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        window.updateText = async (index, newText) => {
+            const docRef = doc(db, "SiteSettings", "mainBanner");
+            const snap = await getDoc(docRef);
+            const slides = snap.data().slides;
+            slides[index].text = newText;
+            await setDoc(docRef, { slides: slides });
+        };
+
+        window.removeSlide = async (index) => {
+            if (!confirm("삭제할까요?")) return;
+            const docRef = doc(db, "SiteSettings", "mainBanner");
+            const snap = await getDoc(docRef);
+            const slides = snap.data().slides;
+            slides.splice(index, 1);
+            await setDoc(docRef, { slides: slides });
+        };
+
+        // 권한 체크
+        const user = JSON.parse(localStorage.getItem('userLogined'));
+        if (!user || user.userId !== 'eduthot') {
+            location.href = "index.html";
+        } else {
+            document.querySelector('.admin-page-root').style.display = 'flex';
+        }
     </script>
 </body>
 </html>

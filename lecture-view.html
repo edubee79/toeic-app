@@ -2,88 +2,118 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>강의 시청 | STUDENT ROOM</title>
+    <title>Lecture View | 강의 시청</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; color: white; }
-        .curriculum-item.completed { opacity: 0.5; }
-        .curriculum-item.active { background-color: #312e81; border-left: 4px solid #6366f1; }
+        body { font-family: 'Pretendard', sans-serif; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 1.5rem; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     </style>
 </head>
-<body class="h-screen flex flex-col">
-
-    <header class="h-16 border-b border-slate-800 flex items-center justify-between px-8 shrink-0 bg-slate-900">
-        <div class="flex items-center gap-4">
-            <button onclick="location.href='my-room.html'" class="text-slate-400 hover:text-white transition-all">
-                <i class="fas fa-arrow-left text-xl"></i>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 md:p-10">
+    <div class="max-w-6xl w-full">
+        <div class="flex justify-between items-center mb-6">
+            <button onclick="history.back()" class="text-white/60 hover:text-white font-bold transition-colors flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> 강의실로 돌아가기
             </button>
-            <h1 class="text-lg font-bold">[토익 850+] Unit 01. 주어와 동사 파악하기</h1>
         </div>
-        <div class="text-sm font-bold text-slate-400">
-            전체 진도율 <span class="text-indigo-400">45%</span>
+        
+        <div id="player-area" class="video-container shadow-2xl border border-white/10">
+            <div class="text-white flex items-center justify-center h-full flex-col gap-4">
+                <i class="fas fa-circle-notch animate-spin text-3xl text-indigo-500"></i>
+                <p class="font-bold text-slate-400">강의 영상을 불러오고 있습니다...</p>
+            </div>
         </div>
-    </header>
 
-    <div class="flex flex-grow overflow-hidden">
-        <main class="flex-grow bg-black flex items-center justify-center relative">
-            <div class="w-full aspect-video bg-slate-800 flex flex-col items-center justify-center border border-slate-700">
-                <i class="fas fa-play-circle text-8xl text-white/20 mb-4"></i>
-                <p class="text-slate-500 font-bold italic">강사님이 등록하신 강의 영상이 재생됩니다.</p>
+        <div class="mt-8 flex flex-col md:flex-row justify-between items-start gap-6">
+            <div class="flex-grow">
+                <div class="flex items-center gap-3 mb-3">
+                    <span id="lesson-type" class="text-indigo-400 text-[10px] font-black uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">VIMEO</span>
+                    <span id="course-name-tag" class="text-slate-500 text-[10px] font-black uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10">COURSE</span>
+                </div>
+                <h1 id="lesson-title" class="text-white text-2xl md:text-3xl font-black italic tracking-tight leading-tight">강의 제목을 불러오는 중...</h1>
             </div>
             
-            <div class="absolute bottom-0 w-full p-6 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-center">
-                <div class="flex gap-4">
-                    <button class="text-white hover:text-indigo-400"><i class="fas fa-step-backward"></i> 이전강의</button>
-                    <button class="text-white hover:text-indigo-400">다음강의 <i class="fas fa-step-forward"></i></button>
-                </div>
-                <button class="bg-indigo-600 px-6 py-2 rounded-xl font-bold text-sm">과제 제출하기</button>
+            <div class="flex gap-3">
+                <button class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl font-bold transition-all border border-white/10 text-sm">
+                    <i class="fas fa-file-download mr-2"></i>자료 다운로드
+                </button>
             </div>
-        </main>
-
-        <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <h2 class="text-sm font-black uppercase tracking-widest text-slate-500">Curriculum</h2>
-            </div>
-            <div class="flex-grow overflow-y-auto">
-                
-                <div class="curriculum-item completed p-6 border-b border-slate-800/50 flex gap-4 cursor-pointer hover:bg-slate-800/30">
-                    <div class="text-emerald-500 mt-1"><i class="fas fa-check-circle"></i></div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-500 mb-1">01차시</p>
-                        <p class="text-sm font-bold text-slate-300">오리엔테이션 및 학습법</p>
-                    </div>
-                </div>
-
-                <div class="curriculum-item active p-6 border-b border-slate-800/50 flex gap-4 cursor-pointer">
-                    <div class="text-indigo-400 mt-1"><i class="fas fa-play-circle animate-pulse"></i></div>
-                    <div>
-                        <p class="text-[10px] font-black text-indigo-400 mb-1">02차시 (학습 중)</p>
-                        <p class="text-sm font-black text-white">주어와 동사 파악하기</p>
-                    </div>
-                </div>
-
-                <div class="curriculum-item p-6 border-b border-slate-800/50 flex gap-4 cursor-pointer hover:bg-slate-800/30">
-                    <div class="text-slate-600 mt-1"><i class="fas fa-circle"></i></div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-500 mb-1">03차시</p>
-                        <p class="text-sm font-bold text-slate-400">목적어와 보어의 이해</p>
-                    </div>
-                </div>
-
-                <div class="curriculum-item p-6 border-b border-slate-800/50 flex gap-4 opacity-30">
-                    <div class="text-slate-600 mt-1"><i class="fas fa-lock"></i></div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-500 mb-1">04차시</p>
-                        <p class="text-sm font-bold text-slate-400">분사구문 정복하기</p>
-                    </div>
-                </div>
-
-            </div>
-        </aside>
+        </div>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 강사님 Firebase 설정 정보
+        const firebaseConfig = {
+            apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
+            authDomain: "eduthot-fb088.firebaseapp.com",
+            projectId: "eduthot-fb088",
+            storageBucket: "eduthot-fb088.firebasestorage.app",
+            messagingSenderId: "919552710378",
+            appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // [분석 핵심] URL에서 id 파라미터를 정확하게 추출
+        const params = new URLSearchParams(window.location.search);
+        const lessonId = params.get('id');
+
+        async function loadLessonData() {
+            if (!lessonId) {
+                alert("잘못된 접근입니다. 강의 ID가 없습니다.");
+                location.href = 'my-room.html';
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "Lessons", lessonId);
+                const snap = await getDoc(docRef);
+
+                if (snap.exists()) {
+                    const lesson = snap.data();
+                    
+                    // 1. 텍스트 정보 업데이트
+                    document.getElementById('lesson-title').textContent = lesson.title;
+                    document.getElementById('lesson-type').textContent = lesson.lessonType || 'VIMEO';
+
+                    // 2. 비디오 ID 추출 및 재생 (강사님의 숫자 추출 로직 적용)
+                    // lesson.vimeoId 가 원본 필드명인지 다시 확인 (대소문자 구분)
+                    const rawVimeoId = lesson.vimeoId || lesson.vimeoid; 
+                    const vId = String(rawVimeoId).replace(/[^0-9]/g, "");
+                    
+                    if (vId) {
+                        document.getElementById('player-area').innerHTML = `
+                            <iframe 
+                                src="https://player.vimeo.com/video/${vId}?autoplay=1&badge=0&autopause=0&player_id=0&app_id=58479" 
+                                frameborder="0" 
+                                allow="autoplay; fullscreen; picture-in-picture" 
+                                allowfullscreen 
+                                title="${lesson.title}">
+                            </iframe>`;
+                    } else {
+                        document.getElementById('player-area').innerHTML = `
+                            <div class="text-white p-10 text-center">
+                                <i class="fas fa-exclamation-triangle text-rose-500 text-3xl mb-4"></i>
+                                <p>영상을 불러올 수 없습니다. (비디오 ID 오류)</p>
+                            </div>`;
+                    }
+                } else {
+                    document.getElementById('player-area').innerHTML = `<div class="text-white p-10">존재하지 않는 강의입니다.</div>`;
+                }
+            } catch (error) {
+                console.error("데이터 로딩 중 에러 발생:", error);
+                document.getElementById('player-area').innerHTML = `<div class="text-white p-10">데이터를 불러오는 중 오류가 발생했습니다.</div>`;
+            }
+        }
+
+        // 실행
+        loadLessonData();
+    </script>
 </body>
 </html>

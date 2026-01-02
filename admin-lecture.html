@@ -15,6 +15,8 @@
         .tab-content.active { display: block; }
         .input-box { @apply w-full bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold outline-none mt-1 focus:ring-2 focus:ring-indigo-500; }
         .filter-select { @apply bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm outline-none; }
+        .lesson-type-card { @apply border-2 border-slate-100 rounded-2xl p-4 cursor-pointer transition-all hover:border-indigo-500 bg-white; }
+        .lesson-type-card.selected { @apply border-indigo-500 bg-indigo-50/50; }
     </style>
 </head>
 <body class="min-h-screen flex">
@@ -45,7 +47,6 @@
                 <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-chart-line"></i> 대시보드 요약</a>
                 <a href="admin-lecture.html" class="bg-indigo-600 flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-white shadow-lg"><i class="fas fa-book"></i> 강의/과제 관리</a>
                 <a href="admin-student.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-user-graduate"></i> 학교/학생 관리</a>
-                <a href="admin-revenue.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-wallet"></i> 수입 관리</a>
             </nav>
             <div class="p-4 border-t border-slate-800">
                 <button onclick="handleLogout()" class="w-full flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-500/10 transition-all">
@@ -57,7 +58,7 @@
         <main class="flex-grow p-10 overflow-y-auto">
             <header class="mb-10">
                 <h1 class="text-3xl font-black text-slate-900 uppercase">Lecture Master</h1>
-                <p class="text-slate-500 font-medium">학교별, 강좌별로 강의를 체계적으로 관리하세요.</p>
+                <p class="text-slate-500 font-medium italic">Vimeo(인강), Zoom(실시간), Bunny.net(보충) 관리 시스템</p>
             </header>
 
             <div class="flex gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm w-fit border border-slate-100">
@@ -80,15 +81,38 @@
             <div id="tab-add" class="tab-content">
                 <div class="grid lg:grid-cols-2 gap-8">
                     <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-black text-indigo-600 mb-8 italic">STEP 1. 강좌 개설</h3>
+                        <h3 class="text-xl font-black text-indigo-600 mb-8 italic">STEP 1. 강좌 기본 설정</h3>
                         <div class="space-y-4">
-                            <div>
-                                <label class="text-[10px] font-black text-slate-400 ml-2">학교 지정 (필터용)</label>
-                                <select id="course-target-school" class="input-box"></select>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">학교 지정</label>
+                                    <select id="course-target-school" class="input-box"></select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">수업 분류</label>
+                                    <select id="course-category" class="input-box"></select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-black text-indigo-500 ml-2 uppercase">대표 타입</label>
+                                    <select id="course-type" class="input-box bg-indigo-50/50">
+                                        <option value="VOD">VOD 중심</option>
+                                        <option value="LIVE">실시간 중심</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-indigo-500 ml-2 uppercase">난이도 레벨</label>
+                                    <select id="course-level" class="input-box bg-indigo-50/50">
+                                        <option value="입문">입문</option>
+                                        <option value="중급">중급</option>
+                                        <option value="고급">고급</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
-                                <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">강좌명(과목)</label>
-                                <input type="text" id="course-name" placeholder="강좌 제목" class="input-box">
+                                <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">강좌명</label>
+                                <input type="text" id="course-name" placeholder="강좌명을 입력하세요" class="input-box">
                             </div>
                             <div>
                                 <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">강좌 설명</label>
@@ -96,11 +120,11 @@
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">이미지 URL</label>
-                                    <input type="text" id="course-img" placeholder="https://..." class="input-box">
+                                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">대표 이미지</label>
+                                    <input type="file" id="course-img-file" class="input-box bg-white border-2 border-dashed border-slate-200 py-2">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">판매 가격</label>
+                                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">수강료</label>
                                     <input type="number" id="course-price" placeholder="0" class="input-box">
                                 </div>
                             </div>
@@ -109,15 +133,45 @@
                     </div>
 
                     <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-black text-slate-800 mb-8 italic">STEP 2. 영상 연결</h3>
+                        <h3 class="text-xl font-black text-slate-800 mb-8 italic">STEP 2. 수업 및 영상 연결</h3>
                         <div class="space-y-4">
-                            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">강좌 선택</label>
+                            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">대상 강좌 선택</label>
                             <select id="parent-course-select" class="w-full bg-emerald-50 border-none rounded-2xl p-4 text-sm font-black text-emerald-700 outline-none">
                                 <option value="">강좌를 먼저 선택하세요</option>
                             </select>
-                            <input type="text" id="lesson-title" placeholder="영상 제목" class="input-box">
-                            <input type="text" id="lesson-vimeo" placeholder="Vimeo ID (숫자)" class="input-box">
-                            <button onclick="saveLesson()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-lg mt-4">영상 최종 저장</button>
+
+                            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">수업 형태 선택</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div id="type-vimeo" onclick="selectLessonType('VIMEO')" class="lesson-type-card selected text-center">
+                                    <i class="fas fa-play-circle text-indigo-500 mb-2"></i>
+                                    <p class="text-[10px] font-black">정규 인강<br>(Vimeo)</p>
+                                </div>
+                                <div id="type-zoom" onclick="selectLessonType('ZOOM')" class="lesson-type-card text-center">
+                                    <i class="fas fa-video text-blue-500 mb-2"></i>
+                                    <p class="text-[10px] font-black">실시간 수업<br>(Zoom)</p>
+                                </div>
+                                <div id="type-bunny" onclick="selectLessonType('BUNNY')" class="lesson-type-card text-center">
+                                    <i class="fas fa-history text-emerald-500 mb-2"></i>
+                                    <p class="text-[10px] font-black">보충 영상<br>(Bunny.net)</p>
+                                </div>
+                            </div>
+
+                            <input type="text" id="lesson-title" placeholder="수업 제목" class="input-box">
+                            
+                            <div id="input-vimeo">
+                                <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Vimeo Video ID</label>
+                                <input type="text" id="lesson-vimeo-id" placeholder="숫자만 입력" class="input-box">
+                            </div>
+                            <div id="input-zoom" style="display:none;">
+                                <label class="text-[10px] font-black text-blue-500 ml-2 uppercase">Zoom Link</label>
+                                <input type="text" id="lesson-zoom-url" placeholder="https://zoom.us/j/..." class="input-box border-2 border-blue-100">
+                            </div>
+                            <div id="input-bunny" style="display:none;">
+                                <label class="text-[10px] font-black text-emerald-500 ml-2 uppercase">Bunny.net URL</label>
+                                <input type="text" id="lesson-bunny-url" placeholder="버니넷 영상 주소" class="input-box border-2 border-emerald-100">
+                            </div>
+
+                            <button onclick="saveLesson()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-lg mt-4">수업 정보 최종 저장</button>
                         </div>
                     </div>
                 </div>
@@ -128,6 +182,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
@@ -139,40 +194,53 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        // 학교 명단 동기화 (필터용)
-        const syncSchools = () => {
+        let selectedLessonType = 'VIMEO';
+
+        window.selectLessonType = (type) => {
+            selectedLessonType = type;
+            document.querySelectorAll('.lesson-type-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('type-' + type.toLowerCase()).classList.add('selected');
+            document.getElementById('input-vimeo').style.display = type === 'VIMEO' ? 'block' : 'none';
+            document.getElementById('input-zoom').style.display = type === 'ZOOM' ? 'block' : 'none';
+            document.getElementById('input-bunny').style.display = type === 'BUNNY' ? 'block' : 'none';
+        };
+
+        const syncSettings = () => {
             onSnapshot(query(collection(db, "Schools"), orderBy("createdAt", "desc")), (snap) => {
                 const fSch = document.getElementById('filter-school');
                 const rSch = document.getElementById('course-target-school');
                 fSch.innerHTML = '<option value="all">전체 학교</option>';
-                rSch.innerHTML = '<option value="전체">학교 선택(공통일 경우 전체)</option>';
+                rSch.innerHTML = '<option value="전체">전체(공통)</option>';
                 snap.forEach(d => {
-                    const name = d.data().name;
-                    fSch.innerHTML += `<option value="${name}">${name}</option>`;
-                    rSch.innerHTML += `<option value="${name}">${name}</option>`;
+                    const n = d.data().name;
+                    fSch.innerHTML += `<option value="${n}">${n}</option>`;
+                    rSch.innerHTML += `<option value="${n}">${n}</option>`;
+                });
+            });
+
+            onSnapshot(query(collection(db, "SubjectCategories"), orderBy("createdAt", "desc")), (snap) => {
+                const rCat = document.getElementById('course-category');
+                rCat.innerHTML = '<option value="미지정">분류 선택</option>';
+                snap.forEach(d => {
+                    const n = d.data().name;
+                    rCat.innerHTML += `<option value="${n}">${n}</option>`;
                 });
             });
         };
 
-        // 강의 리스트 및 강좌 필터 자동 갱신
         const initCourseList = () => {
             onSnapshot(query(collection(db, "Courses"), orderBy("createdAt", "desc")), (snap) => {
                 const container = document.getElementById('course-list-container');
                 const fCourse = document.getElementById('filter-course');
                 const pSelect = document.getElementById('parent-course-select');
-                
                 container.innerHTML = "";
                 fCourse.innerHTML = '<option value="all">전체 강좌(과목)</option>';
                 pSelect.innerHTML = '<option value="">강좌를 선택하세요</option>';
-
-                const courseNames = new Set();
-
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
                     const id = docSnap.id;
-                    courseNames.add(data.name);
-
                     container.innerHTML += `
                         <div class="course-card bg-white p-6 rounded-[2rem] border border-slate-100 flex justify-between items-center shadow-sm" 
                              data-school="${data.targetSchool || '전체'}" data-name="${data.name}">
@@ -180,80 +248,81 @@
                                 <img src="${data.img || 'https://via.placeholder.com/150'}" class="w-16 h-16 rounded-2xl object-cover bg-slate-50">
                                 <div>
                                     <div class="flex gap-2 mb-1">
-                                        <span class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">${data.targetSchool || '전체'}</span>
-                                        <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">₩ ${Number(data.price).toLocaleString()}</span>
+                                        <span class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">${data.targetSchool}</span>
+                                        <span class="text-[9px] font-black text-rose-500 bg-rose-50 px-2 py-0.5 rounded-md">${data.type}</span>
+                                        <span class="text-[9px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">${data.level}</span>
                                     </div>
                                     <h4 class="font-bold text-slate-800">${data.name}</h4>
-                                    <p class="text-xs text-slate-400 mt-1">${data.description || ''}</p>
                                 </div>
                             </div>
                             <button onclick="deleteCourse('${id}')" class="text-slate-200 hover:text-rose-500 px-4 transition-all"><i class="fas fa-trash-alt"></i></button>
                         </div>`;
-                    
+                    fCourse.innerHTML += `<option value="${data.name}">${data.name}</option>`;
                     pSelect.innerHTML += `<option value="${id}">${data.name}</option>`;
                 });
-
-                courseNames.forEach(name => {
-                    fCourse.innerHTML += `<option value="${name}">${name}</option>`;
-                });
-            });
-        };
-
-        window.runFilter = () => {
-            const sch = document.getElementById('filter-school').value;
-            const nm = document.getElementById('filter-course').value;
-            document.querySelectorAll('.course-card').forEach(card => {
-                const cSch = card.getAttribute('data-school');
-                const cNm = card.getAttribute('data-name');
-                const show = (sch === 'all' || cSch === sch) && (nm === 'all' || cNm === nm);
-                card.style.display = show ? 'flex' : 'none';
             });
         };
 
         window.saveCourse = async () => {
             const sch = document.getElementById('course-target-school').value;
+            const cat = document.getElementById('course-category').value;
+            const type = document.getElementById('course-type').value;
+            const level = document.getElementById('course-level').value;
             const name = document.getElementById('course-name').value.trim();
             const desc = document.getElementById('course-desc').value.trim();
-            const img = document.getElementById('course-img').value.trim();
             const price = document.getElementById('course-price').value.trim();
-
-            if(!name || !price) return alert("강좌명과 가격은 필수입니다.");
-            
-            await addDoc(collection(db, "Courses"), { 
-                targetSchool: sch,
-                name: name,
-                description: desc,
-                img: img,
-                price: price,
-                createdAt: new Date() 
-            });
-            
-            alert("강좌가 저장되었습니다.");
-            switchTab('list');
+            const file = document.getElementById('course-img-file').files[0];
+            if(!name || !price) return alert("필수 항목 입력 누락");
+            let imgUrl = "https://via.placeholder.com/150";
+            try {
+                if (file) {
+                    const sRef = ref(storage, `course_img/${Date.now()}_${file.name}`);
+                    await uploadBytes(sRef, file);
+                    imgUrl = await getDownloadURL(sRef);
+                }
+                await addDoc(collection(db, "Courses"), { 
+                    targetSchool: sch, category: cat, type, level, name, description: desc, img: imgUrl, price, createdAt: new Date() 
+                });
+                alert("강좌 저장 완료");
+                switchTab('list');
+            } catch (e) { alert("저장 실패"); }
         };
 
         window.saveLesson = async () => {
             const courseId = document.getElementById('parent-course-select').value;
             const title = document.getElementById('lesson-title').value.trim();
-            const vimeo = document.getElementById('lesson-vimeo').value.trim();
-            if(!courseId || !title || !vimeo) return alert("모든 항목을 입력하세요.");
-            await addDoc(collection(db, "Lessons"), { courseId, title, vimeo, createdAt: new Date() });
-            alert("영상이 등록되었습니다.");
+            if(!courseId || !title) return alert("강좌와 제목 필수");
+            const lessonData = {
+                courseId, title,
+                lessonType: selectedLessonType,
+                vimeoId: selectedLessonType === 'VIMEO' ? document.getElementById('lesson-vimeo-id').value.trim() : "",
+                zoomUrl: selectedLessonType === 'ZOOM' ? document.getElementById('lesson-zoom-url').value.trim() : "",
+                bunnyUrl: selectedLessonType === 'BUNNY' ? document.getElementById('lesson-bunny-url').value.trim() : "",
+                createdAt: new Date()
+            };
+            await addDoc(collection(db, "Lessons"), lessonData);
+            alert("수업 등록 완료");
+            document.getElementById('lesson-title').value = "";
+            document.getElementById('lesson-vimeo-id').value = "";
+            document.getElementById('lesson-zoom-url').value = "";
+            document.getElementById('lesson-bunny-url').value = "";
         };
 
         window.deleteCourse = async (id) => { if(confirm("삭제하시겠습니까?")) await deleteDoc(doc(db, "Courses", id)); };
-
         window.switchTab = (id) => {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active');
         };
-
-        window.onload = () => {
-            syncSchools();
-            initCourseList();
+        window.runFilter = () => {
+            const sch = document.getElementById('filter-school').value;
+            const nm = document.getElementById('filter-course').value;
+            document.querySelectorAll('.course-card').forEach(c => {
+                const show = (sch === 'all' || c.dataset.school === sch) && (nm === 'all' || c.dataset.name === nm);
+                c.style.display = show ? 'flex' : 'none';
+            });
         };
+        window.onload = () => { syncSettings(); initCourseList(); };
     </script>
 </body>
 </html>

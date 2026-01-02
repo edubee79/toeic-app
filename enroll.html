@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수강신청 및 결제 | EDU THOT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .pay-method-card { @apply border-2 border-slate-100 rounded-[2rem] p-6 cursor-pointer transition-all flex flex-col items-center gap-3 bg-white hover:border-indigo-500; }
+        .pay-method-card.active { @apply border-indigo-600 bg-indigo-50/50 ring-4 ring-indigo-50; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div onclick="location.href='index.html'" class="flex items-center gap-2 text-slate-900 font-black text-xl cursor-pointer">
+                <i class="fas fa-graduation-cap text-indigo-600"></i>
+                <span>EDU THOT</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex gap-6 md:gap-12 font-bold text-slate-700 text-sm">
+                    <a href="lecture-list.html" class="hover:text-indigo-600 transition-colors">수강신청</a>
+                    <a href="my-room.html" class="hover:text-indigo-600 transition-colors">나의 강의실</a>
+                </div>
+                <div id="user-info-area" class="flex items-center gap-3 ml-4 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
+                    <span id="display-user-name" class="text-xs font-black text-slate-600 italic">로그인 필요</span>
+                    <a href="login.html" class="text-slate-400 hover:text-indigo-600"><i class="fas fa-user-circle text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6 md:p-12">
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl font-black text-slate-900 mb-4 italic">ENROLLMENT</h1>
+            <p class="text-slate-500 font-bold">수강하실 강의를 확인하고 결제 수단을 선택하세요.</p>
+        </header>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="md:col-span-2 space-y-6">
+                <div class="bg-white p-8 rounded-[3rem] shadow-xl shadow-slate-200/50 border border-slate-50">
+                    <h3 class="text-xs font-black text-indigo-600 uppercase tracking-widest mb-4">Selected Course</h3>
+                    <h2 id="course-name" class="text-2xl font-black text-slate-900 mb-2">강의 정보를 불러오는 중...</h2>
+                    <p id="course-description" class="text-slate-400 font-bold mb-6 italic"></p>
+                    
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                        <span class="font-bold text-slate-500">수강 기간</span>
+                        <span class="font-black text-slate-900">무제한 (평생 소장)</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-[3rem] shadow-xl shadow-slate-200/50 border border-slate-50">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-8">Select Payment Method</h3>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div id="method-card" class="pay-method-card active" onclick="selectMethod('card')">
+                            <i class="fas fa-credit-card text-2xl text-indigo-600"></i>
+                            <span class="font-black text-slate-800">신용카드</span>
+                        </div>
+                        <div id="method-bank" class="pay-method-card" onclick="selectMethod('bank')">
+                            <i class="fas fa-university text-2xl text-slate-400"></i>
+                            <span class="font-black text-slate-800">무통장입금</span>
+                        </div>
+                    </div>
+
+                    <div id="bank-info" class="hidden mt-8 p-6 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                        <p class="text-sm font-bold text-slate-600 mb-2 italic"><i class="fas fa-info-circle mr-1"></i> 입금 계좌 안내</p>
+                        <p class="text-lg font-black text-slate-900">신한은행 110-123-456789</p>
+                        <p class="text-sm font-bold text-slate-500">예금주: 에듀돗(EDU THOT)</p>
+                        <p class="text-xs text-rose-500 mt-4 font-bold">* 입금 확인 후 관리자가 승인해야 수강이 시작됩니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl sticky top-24">
+                    <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-6">Payment Summary</h3>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between font-bold">
+                            <span class="opacity-60">강의 금액</span>
+                            <span id="summary-price">₩ 0</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span class="opacity-60">할인 금액</span>
+                            <span class="text-emerald-400">- ₩ 0</span>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 flex justify-between items-end">
+                            <span class="font-black">최종 결제 금액</span>
+                            <span id="final-price" class="text-3xl font-black text-indigo-400">0</span>
+                        </div>
+                    </div>
+                    
+                    <button id="pay-btn" onclick="requestPay()" class="w-full bg-indigo-600 hover:bg-white hover:text-indigo-600 text-white py-5 rounded-2xl font-black text-xl transition-all shadow-xl shadow-indigo-500/20">
+                        결제하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, updateDoc, getDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
+            authDomain: "eduthot-fb088.firebaseapp.com",
+            projectId: "eduthot-fb088",
+            storageBucket: "eduthot-fb088.firebasestorage.app",
+            messagingSenderId: "919552710378",
+            appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentMethod = 'card';
+        let loggedInUser = null;
+
+        const checkLoginState = () => {
+            const userLogined = localStorage.getItem('userLogined');
+            const display = document.getElementById('display-user-name');
+            
+            if (userLogined) {
+                loggedInUser = JSON.parse(userLogined);
+                display.innerText = loggedInUser.userId === 'eduthot' ? "👑 관리자님" : `👤 ${loggedInUser.userId}님`;
+            } else {
+                alert("로그인이 필요합니다.");
+                location.href = "login.html";
+            }
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id');
+
+        const loadCourseData = async () => {
+            if (!courseId) return;
+            try {
+                const courseDoc = await getDoc(doc(db, "Courses", courseId));
+                if (courseDoc.exists()) {
+                    const data = courseDoc.data();
+                    document.getElementById('course-name').innerText = data.name;
+                    document.getElementById('course-description').innerText = data.description || "강의 상세 내용을 확인하세요.";
+                    document.getElementById('summary-price').innerText = `₩ ${Number(data.price || 0).toLocaleString()}`;
+                    document.getElementById('final-price').innerText = Number(data.price || 0).toLocaleString();
+                }
+            } catch (error) {
+                console.error("데이터 로드 실패:", error);
+            }
+        };
+
+        window.selectMethod = (method) => {
+            currentMethod = method;
+            document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`method-${method}`).classList.add('active');
+            document.getElementById('bank-info').classList.toggle('hidden', method !== 'bank');
+        };
+
+        window.requestPay = async () => {
+            if(!loggedInUser || !courseId) return;
+            
+            const btn = document.getElementById('pay-btn');
+            btn.disabled = true;
+            btn.innerText = "처리 중...";
+
+            try {
+                // 결제 데이터 구성
+                const payData = {
+                    payMethod: currentMethod,
+                    paymentStatus: currentMethod === 'card' ? 'active' : 'pending',
+                    userClass: currentMethod === 'card' ? '정회원' : '대기회원',
+                    enrolledDate: serverTimestamp(),
+                    // 핵심: 구매 목록에 현재 강의 ID 추가
+                    purchasedCourses: arrayUnion(courseId)
+                };
+
+                await updateDoc(doc(db, "Users", loggedInUser.userId), payData);
+
+                if(currentMethod === 'card') {
+                    alert("결제가 완료되었습니다! 나의 학습방에서 바로 확인 가능합니다.");
+                } else {
+                    alert("무통장 입금 신청이 완료되었습니다. 관리자 승인 후 나의 학습방에 강의가 나타납니다.");
+                }
+                location.href = "my-room.html";
+            } catch (e) {
+                console.error(e);
+                alert("처리 중 오류가 발생했습니다.");
+                btn.disabled = false;
+                btn.innerText = "결제하기";
+            }
+        };
+
+        window.onload = () => {
+            checkLoginState();
+            loadCourseData();
+        };
+    </script>
+</body>
+</html>

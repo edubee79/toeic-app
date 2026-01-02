@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입 | STUDENT ROOM</title>
+    <title>회원가입 | EDU THOT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -32,7 +32,7 @@
             
             <div class="hidden md:flex w-1/3 bg-indigo-600 p-12 text-white flex-col justify-between">
                 <div>
-                    <h1 class="text-3xl font-black italic tracking-tighter mb-4">STUDENT<br>ROOM</h1>
+                    <h1 class="text-3xl font-black italic tracking-tighter mb-4">EDU<br>THOT</h1>
                     <div class="w-12 h-1 bg-white/30 rounded-full"></div>
                 </div>
                 <div>
@@ -40,7 +40,7 @@
                         선생님이 직접 관리하는<br>프리미엄 학습 공간입니다.
                     </p>
                 </div>
-                <div class="text-sm font-medium opacity-50 italic">© 2026 Admin Room.</div>
+                <div class="text-sm font-medium opacity-50 italic">© 2026 Edu Thot.</div>
             </div>
 
             <div class="flex-grow p-10 md:p-16">
@@ -54,6 +54,10 @@
                     <div>
                         <h3 class="section-title"><i class="fas fa-user-circle text-indigo-500"></i> Account Info</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="input-label">Real Name</label>
+                                <input type="text" id="user-name" placeholder="실명 입력" class="input-field" required>
+                            </div>
                             <div>
                                 <label class="input-label">ID</label>
                                 <input type="text" id="user-id" placeholder="아이디 입력" class="input-field" required>
@@ -96,7 +100,7 @@
                     </div>
 
                     <div class="pt-6">
-                        <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xl hover:bg-indigo-600 shadow-xl transition-all transform hover:-translate-y-1">
+                        <button type="submit" id="signup-btn" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xl hover:bg-indigo-600 shadow-xl transition-all transform hover:-translate-y-1">
                             회원가입 완료
                         </button>
                         <p class="text-center mt-6 text-sm font-bold text-slate-400">
@@ -111,7 +115,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, setDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
@@ -125,30 +129,71 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // [핵심] 학교 목록 실시간 로드 함수
         const loadSchools = () => {
             const schoolSelect = document.getElementById('school-select');
             const q = query(collection(db, "Schools"), orderBy("createdAt", "asc"));
-
             onSnapshot(q, (snapshot) => {
-                // '일반 수강생' 옵션은 유지하고 나머지만 새로고침
                 schoolSelect.innerHTML = '<option value="일반">일반 수강생 (소속없음)</option>';
-                
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     const option = document.createElement('option');
-                    option.value = data.name; // DB에 저장된 학교 이름
+                    option.value = data.name;
                     option.textContent = data.name;
                     schoolSelect.appendChild(option);
                 });
             });
         };
 
-        // 회원가입 버튼 클릭 시 처리 (로그인 페이지 이동 전 알림)
-        document.getElementById('signup-form').onsubmit = (e) => {
+        document.getElementById('signup-form').onsubmit = async (e) => {
             e.preventDefault();
-            alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
-            location.href = "login.html";
+            
+            const signupBtn = document.getElementById('signup-btn');
+            const userName = document.getElementById('user-name').value.trim();
+            const userId = document.getElementById('user-id').value.trim();
+            const userPw = document.getElementById('user-pw').value.trim();
+            const userEmail = document.getElementById('user-email').value.trim();
+            const userPhone = document.getElementById('user-phone').value.trim();
+            const school = document.getElementById('school-select').value; // 변수명 school로 변경
+            const studentId = document.getElementById('student-id').value.trim();
+
+            if(!userId || !userPw || !userName) return alert("필수 정보를 모두 입력해주세요.");
+
+            try {
+                signupBtn.disabled = true;
+                signupBtn.innerText = "처리 중...";
+
+                const userDoc = await getDoc(doc(db, "Users", userId));
+                if (userDoc.exists()) {
+                    alert("이미 존재하는 아이디입니다.");
+                    signupBtn.disabled = false;
+                    signupBtn.innerText = "회원가입 완료";
+                    return;
+                }
+
+                // [데이터 정렬] 관리자 페이지 필드명과 100% 일치시킴
+                await setDoc(doc(db, "Users", userId), {
+                    userName: userName,   // 관리자 필드명: userName
+                    userId: userId,       // 관리자 필드명: userId
+                    userPw: userPw,
+                    userEmail: userEmail,
+                    userPhone: userPhone,
+                    school: school,       // [수정] schoolName -> school 로 변경 (관리자 페이지 필터와 일치)
+                    studentId: studentId,
+                    userClass: "미지정",   // 관리자 페이지 '수강반' 표시를 위해 추가
+                    progress: 0,          // 관리자 페이지 '이수율' 표시를 위해 추가
+                    role: "student",
+                    createdAt: serverTimestamp()
+                });
+
+                alert(`${userName}님, 회원가입이 완료되었습니다!`);
+                location.href = "login.html";
+
+            } catch (error) {
+                console.error("회원가입 에러:", error);
+                alert("회원가입 중 오류가 발생했습니다.");
+                signupBtn.disabled = false;
+                signupBtn.innerText = "회원가입 완료";
+            }
         };
 
         window.onload = loadSchools;

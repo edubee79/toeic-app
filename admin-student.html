@@ -6,6 +6,7 @@
     <title>학생 및 성과 관리 | 관리자</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         body { font-family: 'Pretendard', sans-serif; background-color: #f1f5f9; }
@@ -14,6 +15,10 @@
         .tab-content.active { display: block; }
         .status-pass { background-color: #dcfce7; color: #166534; }
         .status-fail { background-color: #fee2e2; color: #991b1b; }
+        /* 결제 상태 스타일 추가 */
+        .pay-card { background-color: #e0e7ff; color: #3730a3; }
+        .pay-ready { background-color: #fef3c7; color: #92400e; }
+        .pay-active { background-color: #dcfce7; color: #166534; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -63,13 +68,12 @@
                     </select>
                 </div>
                 <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-                    <table class="w-full text-left text-sm">
+                    <table class="w-full text-left text-sm" id="student-table">
                         <thead class="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                             <tr>
                                 <th class="p-8">학생정보(ID)</th>
                                 <th class="p-8">소속 학교</th>
-                                <th class="p-8">수강반</th>
-                                <th class="p-8">이수율</th>
+                                <th class="p-8">결제/수강상태</th> <th class="p-8">이수율</th>
                                 <th class="p-8">판정</th>
                                 <th class="p-8 text-right">삭제</th>
                             </tr>
@@ -104,7 +108,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
@@ -117,9 +121,22 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 변수명 및 필드명 준수: userName, userId, school, userClass, progress
+        // [추가 기능] 무통장 입금 승인/거부 함수
+        window.handlePayment = async (userId, action) => {
+            const status = action === 'approve' ? 'active' : 'rejected';
+            const msg = action === 'approve' ? "입금 확인 후 수강을 승인하시겠습니까?" : "수강 신청을 거절하시겠습니까?";
+            if(confirm(msg)) {
+                await updateDoc(doc(db, "Users", userId), { 
+                    paymentStatus: status,
+                    userClass: action === 'approve' ? "정회원" : "미승인"
+                });
+                alert("처리 완료");
+            }
+        };
+
+        // 학생 리스트 로드 (원본 필드명 유지: userName, userId, school, userClass, progress)
         window.loadStudents = () => {
-            onSnapshot(query(collection(db, "Users"), orderBy("createdAt", "desc")), (snap) => {
+            onSnapshot(collection(db, "Users"), (snap) => {
                 const container = document.getElementById('student-list-container');
                 const fSch = document.getElementById('filter-school').value;
                 const fCls = document.getElementById('filter-class').value;
@@ -129,22 +146,37 @@
                 container.innerHTML = "";
                 snap.forEach(d => {
                     const u = d.data();
-                    if(u.userId === 'eduthot') return; // 관리자 제외
-                    
+                    if(u.userId === 'eduthot') return;
                     if(u.userClass) classSet.add(u.userClass);
 
-                    // 필터링
                     if(fSch !== 'all' && u.school !== fSch) return;
                     if(fCls !== 'all' && u.userClass !== fCls) return;
 
                     const prog = u.progress || 0;
                     const isPass = prog >= threshold;
 
+                    // 결제 로직 표시
+                    let payHtml = "";
+                    if(u.payMethod === 'card') {
+                        payHtml = `<span class="px-3 py-1 rounded-full text-[10px] pay-card font-black italic">카드결제 완료</span>`;
+                    } else if(u.paymentStatus === 'active') {
+                        payHtml = `<span class="px-3 py-1 rounded-full text-[10px] pay-active font-black italic">입금승인 완료</span>`;
+                    } else if(u.payMethod === 'bank') {
+                        payHtml = `
+                            <div class="flex gap-1">
+                                <span class="px-3 py-1 rounded-full text-[10px] pay-ready font-black">입금대기</span>
+                                <button onclick="handlePayment('${d.id}', 'approve')" class="text-[10px] bg-slate-900 text-white px-2 py-1 rounded hover:bg-indigo-600 transition-all">승인</button>
+                                <button onclick="handlePayment('${d.id}', 'reject')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded hover:bg-rose-700 transition-all">거절</button>
+                            </div>`;
+                    } else {
+                        payHtml = `<span class="text-slate-300 text-[10px]">미결제</span>`;
+                    }
+
                     container.innerHTML += `
                         <tr class="border-b border-slate-50 hover:bg-slate-50/50">
                             <td class="p-8">${u.userName || '미입력'} <span class="text-[10px] text-slate-400">(${u.userId})</span></td>
                             <td class="p-8 text-xs text-slate-500">${u.school || '-'}</td>
-                            <td class="p-8 text-xs text-indigo-600">${u.userClass || '-'}</td>
+                            <td class="p-8">${payHtml}</td>
                             <td class="p-8">
                                 <div class="flex items-center gap-2">
                                     <div class="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -158,7 +190,6 @@
                         </tr>`;
                 });
                 
-                // 반 필터 업데이트
                 const clsSelect = document.getElementById('filter-class');
                 const current = clsSelect.value;
                 clsSelect.innerHTML = '<option value="all">전체 수강반</option>';
@@ -169,6 +200,14 @@
             });
         };
 
+        // 원본 기능: 엑셀 다운로드 로직
+        window.downloadExcel = () => {
+            const table = document.getElementById("student-table");
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "학생 명단" });
+            XLSX.writeFile(workbook, "EduThot_Student_List.xlsx");
+        };
+
+        // 원본 기능: 데이터 추가 및 삭제
         window.addItem = async (col, inputId) => {
             const val = document.getElementById(inputId).value.trim();
             if(!val) return;
@@ -178,6 +217,7 @@
 
         window.deleteItem = async (col, id) => { if(confirm("삭제하시겠습니까?")) await deleteDoc(doc(db, col, id)); };
 
+        // 원본 기능: 탭 전환
         window.switchTab = (id) => {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-slate-400'); });
@@ -185,6 +225,7 @@
             event.currentTarget.classList.add('active'); event.currentTarget.classList.remove('text-slate-400');
         };
 
+        // 원본 기능: 학교 및 카테고리 실시간 동기화
         const syncSettings = () => {
             onSnapshot(query(collection(db, "Schools"), orderBy("createdAt", "desc")), (snap) => {
                 const list = document.getElementById('managed-school-list');
@@ -207,5 +248,7 @@
 
         window.onload = () => { syncSettings(); loadStudents(); };
     </script>
+</body>
+</html>    </script>
 </body>
 </html>
