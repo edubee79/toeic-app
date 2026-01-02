@@ -9,29 +9,20 @@
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         body { font-family: 'Pretendard', sans-serif; background: #fcfdfe; color: #1e293b; }
-        
-        /* 유리창 효과 (Glassmorphism) */
         .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
-        
-        /* 코스 카드: 세련된 그림자와 부드러운 애니메이션 */
         .course-card { 
             @apply relative overflow-hidden transition-all duration-500 ease-out cursor-pointer rounded-[2.5rem] bg-white border border-slate-100;
             box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04);
         }
         .course-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.15); }
         .course-card.active { @apply ring-4 ring-indigo-500/20 border-indigo-500 bg-indigo-50/30; }
-        
-        /* 강의 목록: 깔끔한 리스트 디자인 */
         .lesson-item { 
             @apply flex items-center justify-between p-6 rounded-3xl transition-all duration-300 mb-4 bg-white border border-slate-50;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
         .lesson-item:hover { @apply border-indigo-200 bg-indigo-50/50 translate-x-1; }
-        
-        /* 커스텀 스크롤바 */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        
         .grad-text { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
@@ -90,8 +81,7 @@
                     <h2 class="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3 italic">
                         <span class="w-2 h-8 bg-indigo-600 rounded-full"></span> My Learning Path
                     </h2>
-                    <div id="my-course-list" class="grid grid-cols-1 gap-6">
-                        </div>
+                    <div id="my-course-list" class="grid grid-cols-1 gap-6"></div>
                 </div>
 
                 <div class="bg-slate-50 p-8 rounded-[3rem] border border-slate-100">
@@ -114,14 +104,13 @@
                         <div>
                             <h3 id="view-course-name" class="text-3xl font-black text-slate-900 tracking-tight mb-2 italic">Select a Course</h3>
                             <p class="text-slate-400 font-medium text-sm flex items-center gap-2">
-                                <i class="fas fa-play-circle text-indigo-500"></i> 학습할 회차를 선택하여 공부를 시작하세요.
+                                <i class="fas fa-play-circle text-indigo-500"></i> 영상을 90% 이상 시청해야 출석이 인정됩니다.
                             </p>
                         </div>
                         <span id="lesson-count-badge" class="text-[11px] font-black bg-indigo-600 text-white px-5 py-2 rounded-full shadow-lg shadow-indigo-200">0 Lessons</span>
                     </div>
                     
-                    <div id="lesson-list" class="p-10 space-y-4 max-h-[800px] overflow-y-auto">
-                        </div>
+                    <div id="lesson-list" class="p-10 space-y-4 max-h-[800px] overflow-y-auto"></div>
                 </div>
             </div>
         </div>
@@ -144,17 +133,21 @@
 
         let currentUser = null;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const userLogined = localStorage.getItem('userLogined');
-            if (!userLogined) { location.href = "login.html"; return; }
-            const authData = JSON.parse(userLogined);
+        // [핵심 변경] 사용자의 최신 시청 데이터를 DB에서 다시 가져오는 함수
+        async function refreshUserStats() {
+            const authData = JSON.parse(localStorage.getItem('userLogined'));
             const userSnap = await getDoc(doc(db, "Users", authData.userId));
-            currentUser = userSnap.exists() ? userSnap.data() : authData;
-            
-            document.getElementById('nav-user-details').textContent = `${currentUser.userId} · ${currentUser.school}`;
-            document.getElementById('nav-user-icon').textContent = currentUser.userId.substring(0, 2).toUpperCase();
-            document.getElementById('user-name-display').textContent = currentUser.userId;
-            
+            if (userSnap.exists()) {
+                currentUser = userSnap.data();
+                document.getElementById('nav-user-details').textContent = `${currentUser.userId} · ${currentUser.school}`;
+                document.getElementById('nav-user-icon').textContent = currentUser.userId.substring(0, 2).toUpperCase();
+                document.getElementById('user-name-display').textContent = currentUser.userId;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!localStorage.getItem('userLogined')) { location.href = "login.html"; return; }
+            await refreshUserStats();
             loadMyCourses();
         });
 
@@ -187,6 +180,9 @@
         }
 
         window.selectCourse = async (courseId, courseName) => {
+            // 코스 선택 시에도 최신 시청 기록을 다시 가져옴 (출석 반영 확인용)
+            await refreshUserStats();
+
             document.querySelectorAll('.course-card').forEach(c => c.classList.remove('active'));
             document.getElementById(`card-${courseId}`)?.classList.add('active');
             document.getElementById('lecture-viewer').style.display = 'block';
@@ -202,6 +198,7 @@
             let watchedCount = 0;
             lessons.forEach((docSnap, index) => {
                 const lesson = docSnap.data();
+                // DB에서 실시간으로 가져온 watchedLessons 배열에서 확인
                 const isWatched = currentUser.watchedLessons && currentUser.watchedLessons.includes(docSnap.id);
                 if(isWatched) watchedCount++;
                 const progress = isWatched ? 100 : 0;
@@ -231,6 +228,7 @@
                     </div>`;
             });
 
+            // 전체 수강률 업데이트 (SVG 서클 애니메이션)
             const totalRate = lessons.length > 0 ? Math.round((watchedCount / lessons.length) * 100) : 0;
             const circle = document.getElementById('attendance-circle-svg');
             const circumference = 2 * Math.PI * 24;

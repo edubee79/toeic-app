@@ -2,53 +2,50 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Lecture View | 강의 시청</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture View | Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://player.vimeo.com/api/player.js"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        body { font-family: 'Pretendard', sans-serif; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 1.5rem; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        body { font-family: 'Pretendard', sans-serif; background: #0a0f1e; color: white; margin: 0; padding: 0; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 1.5rem; overflow: hidden; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 md:p-10">
-    <div class="max-w-6xl w-full">
-        <div class="flex justify-between items-center mb-6">
-            <button onclick="history.back()" class="text-white/60 hover:text-white font-bold transition-colors flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i> 강의실로 돌아가기
-            </button>
+<body class="min-h-screen">
+
+    <nav class="w-full bg-slate-900 border-b border-white/10 p-4 flex justify-between items-center sticky top-0 z-50">
+        <button onclick="location.href='my-room.html'" class="text-sm font-bold text-slate-400 hover:text-white">
+            <i class="fas fa-chevron-left mr-2"></i> 강의실
+        </button>
+        <div id="watch-status" class="bg-indigo-600 px-4 py-2 rounded-lg text-xs font-black shadow-lg">
+            시스템 초기화 중...
         </div>
-        
-        <div id="player-area" class="video-container shadow-2xl border border-white/10">
-            <div class="text-white flex items-center justify-center h-full flex-col gap-4">
-                <i class="fas fa-circle-notch animate-spin text-3xl text-indigo-500"></i>
-                <p class="font-bold text-slate-400">강의 영상을 불러오고 있습니다...</p>
-            </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto p-6">
+        <div id="player-wrapper" class="video-wrapper shadow-2xl border border-white/5">
+            <div class="absolute inset-0 flex items-center justify-center text-slate-500">영상을 불러오고 있습니다...</div>
         </div>
 
-        <div class="mt-8 flex flex-col md:flex-row justify-between items-start gap-6">
-            <div class="flex-grow">
-                <div class="flex items-center gap-3 mb-3">
-                    <span id="lesson-type" class="text-indigo-400 text-[10px] font-black uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">VIMEO</span>
-                    <span id="course-name-tag" class="text-slate-500 text-[10px] font-black uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10">COURSE</span>
-                </div>
-                <h1 id="lesson-title" class="text-white text-2xl md:text-3xl font-black italic tracking-tight leading-tight">강의 제목을 불러오는 중...</h1>
+        <div class="mt-8 bg-slate-900/50 p-8 rounded-[2rem] border border-white/5">
+            <h1 id="lesson-title" class="text-2xl font-black mb-4">강의 제목을 불러오는 중...</h1>
+            <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div id="progress-bar-inner" class="h-full bg-indigo-500 transition-all duration-300" style="width: 0%"></div>
             </div>
-            
-            <div class="flex gap-3">
-                <button class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl font-bold transition-all border border-white/10 text-sm">
-                    <i class="fas fa-file-download mr-2"></i>자료 다운로드
-                </button>
+            <div class="flex justify-between mt-2">
+                <span id="progress-percent" class="text-[10px] font-bold text-indigo-400">0% 시청 중</span>
+                <span class="text-[10px] text-slate-500 italic">90% 시청 시 자동 출석</span>
             </div>
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 강사님 Firebase 설정 정보
         const firebaseConfig = {
             apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
             authDomain: "eduthot-fb088.firebaseapp.com",
@@ -57,63 +54,92 @@
             messagingSenderId: "919552710378",
             appId: "1:919552710378:web:7ba72ea2d195e092f8a993"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // [분석 핵심] URL에서 id 파라미터를 정확하게 추출
         const params = new URLSearchParams(window.location.search);
         const lessonId = params.get('id');
+        const statusBadge = document.getElementById('watch-status');
+        let isCompleted = false;
 
-        async function loadLessonData() {
-            if (!lessonId) {
-                alert("잘못된 접근입니다. 강의 ID가 없습니다.");
-                location.href = 'my-room.html';
-                return;
-            }
-
+        async function startApp() {
             try {
-                const docRef = doc(db, "Lessons", lessonId);
-                const snap = await getDoc(docRef);
+                // 1. 로그인 체크
+                const userSession = localStorage.getItem('userLogined');
+                if (!userSession) { alert("로그인이 필요합니다."); location.href="login.html"; return; }
+                const userData = JSON.parse(userSession);
+                const userRef = doc(db, "Users", userData.userId);
 
-                if (snap.exists()) {
-                    const lesson = snap.data();
-                    
-                    // 1. 텍스트 정보 업데이트
-                    document.getElementById('lesson-title').textContent = lesson.title;
-                    document.getElementById('lesson-type').textContent = lesson.lessonType || 'VIMEO';
+                statusBadge.textContent = "데이터 조회 중...";
 
-                    // 2. 비디오 ID 추출 및 재생 (강사님의 숫자 추출 로직 적용)
-                    // lesson.vimeoId 가 원본 필드명인지 다시 확인 (대소문자 구분)
-                    const rawVimeoId = lesson.vimeoId || lesson.vimeoid; 
-                    const vId = String(rawVimeoId).replace(/[^0-9]/g, "");
+                // 2. 강의/유저 데이터 동시 로드
+                const [lSnap, uSnap] = await Promise.all([
+                    getDoc(doc(db, "Lessons", lessonId)),
+                    getDoc(userRef)
+                ]);
+
+                if (!lSnap.exists()) { statusBadge.textContent = "강의를 찾을 수 없음"; return; }
+
+                const lesson = lSnap.data();
+                document.getElementById('lesson-title').textContent = lesson.title;
+                const vId = String(lesson.vimeoId || lesson.vimeoid).replace(/[^0-9]/g, "");
+
+                // 3. 플레이어 생성 (매개변수 최소화)
+                const wrapper = document.getElementById('player-wrapper');
+                wrapper.innerHTML = `<iframe id="v-player" src="https://player.vimeo.com/video/${vId}?autoplay=1&muted=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+
+                const player = new Vimeo.Player(document.querySelector('#v-player'));
+                
+                // 4. 이어보기 데이터 확인
+                const savedTime = uSnap.data()?.resumePoints?.[lessonId] || 0;
+
+                // 5. 핵심: 재생 시작될 때 시간 맞추기
+                player.on('play', async () => {
+                    statusBadge.textContent = "학습 분석 중";
+                    statusBadge.className = "bg-indigo-600 px-4 py-2 rounded-lg text-xs font-black shadow-lg";
                     
-                    if (vId) {
-                        document.getElementById('player-area').innerHTML = `
-                            <iframe 
-                                src="https://player.vimeo.com/video/${vId}?autoplay=1&badge=0&autopause=0&player_id=0&app_id=58479" 
-                                frameborder="0" 
-                                allow="autoplay; fullscreen; picture-in-picture" 
-                                allowfullscreen 
-                                title="${lesson.title}">
-                            </iframe>`;
-                    } else {
-                        document.getElementById('player-area').innerHTML = `
-                            <div class="text-white p-10 text-center">
-                                <i class="fas fa-exclamation-triangle text-rose-500 text-3xl mb-4"></i>
-                                <p>영상을 불러올 수 없습니다. (비디오 ID 오류)</p>
-                            </div>`;
+                    if (savedTime > 2) {
+                        await player.setCurrentTime(savedTime);
+                        player.setMuted(false); // 소리 켜기
+                        console.log("이어보기 시점:", savedTime);
                     }
-                } else {
-                    document.getElementById('player-area').innerHTML = `<div class="text-white p-10">존재하지 않는 강의입니다.</div>`;
-                }
+                });
+
+                // 6. 실시간 업데이트 및 저장
+                player.on('timeupdate', async (data) => {
+                    const duration = await player.getDuration();
+                    const percent = (data.seconds / duration) * 100;
+                    
+                    document.getElementById('progress-bar-inner').style.width = percent + "%";
+                    document.getElementById('progress-percent').textContent = Math.round(percent) + "% 시청 중";
+
+                    // 10초 단위 자동 저장
+                    if (Math.floor(data.seconds) % 10 === 0 && Math.floor(data.seconds) > 0) {
+                        updateDoc(userRef, {
+                            [`resumePoints.${lessonId}`]: Math.floor(data.seconds)
+                        });
+                    }
+
+                    // 90% 달성 시 완료
+                    if (percent >= 90 && !isCompleted) {
+                        isCompleted = true;
+                        await updateDoc(userRef, {
+                            watchedLessons: arrayUnion(lessonId),
+                            [`resumePoints.${lessonId}`]: 0
+                        });
+                        statusBadge.textContent = "출석 완료";
+                        statusBadge.className = "bg-emerald-500 px-4 py-2 rounded-lg text-xs font-black shadow-lg";
+                    }
+                });
+
             } catch (error) {
-                console.error("데이터 로딩 중 에러 발생:", error);
-                document.getElementById('player-area').innerHTML = `<div class="text-white p-10">데이터를 불러오는 중 오류가 발생했습니다.</div>`;
+                console.error(error);
+                statusBadge.textContent = "시스템 오류 발생";
             }
         }
 
-        // 실행
-        loadLessonData();
+        startApp();
     </script>
 </body>
 </html>
