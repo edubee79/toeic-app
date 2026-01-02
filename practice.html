@@ -3,120 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>수입 관리 | 관리자 센터</title>
+    <title>학생 및 성과 관리 | 관리자</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         body { font-family: 'Pretendard', sans-serif; background-color: #f1f5f9; }
-        /* 강사님 메인 페이지와 동일한 보안 방식: 초기 숨김 */
-        .admin-page-root { display: none; }
-        .card { @apply bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100; }
-        .filter-select { @apply bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none; }
+        .tab-btn.active { background-color: #0f172a; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .status-pass { background-color: #dcfce7; color: #166534; }
+        .status-fail { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="min-h-screen flex">
+<body class="min-h-screen">
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentUser = JSON.parse(localStorage.getItem('userLogined'));
-            
-            // 관리자 아이디 'eduthot' 체크
-            if (!currentUser || currentUser.userId !== 'eduthot') {
-                alert("⚠️ 관리자 권한이 없습니다. 로그인 페이지로 이동합니다.");
-                location.href = "login.html"; 
-            } else {
-                // 관리자 확인 완료 시 화면 표시
-                document.querySelector('.admin-page-root').style.display = 'flex';
-            }
-        });
-
-        // 로그아웃 기능
-        function handleLogout() {
-            if (confirm("로그아웃 하시겠습니까?")) {
-                localStorage.removeItem('userLogined');
-                alert("안전하게 로그아웃 되었습니다.");
-                location.href = "index.html";
-            }
-        }
-    </script>
-
-    <div class="admin-page-root w-full min-h-screen flex">
+    <div id="admin-root" class="flex w-full min-h-screen">
         <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0 h-screen sticky top-0">
             <div class="p-8 text-2xl font-black italic tracking-tighter cursor-pointer" onclick="location.href='admin-main.html'">ADMIN ROOM</div>
             <nav class="flex-grow px-4 space-y-2">
                 <a href="admin-main.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-chart-line"></i> 대시보드 요약</a>
-                <a href="admin-home.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-image"></i> 배너/홈페이지 관리</a>
                 <a href="admin-lecture.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-book"></i> 강의/과제 관리</a>
-                <a href="admin-student.html" class="flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-user-graduate"></i> 학교/학생 관리</a>
-                <a href="admin-revenue.html" class="bg-indigo-600 text-white shadow-lg flex items-center gap-3 p-4 rounded-xl text-sm font-bold"><i class="fas fa-wallet"></i> 수입 관리</a>
+                <a href="admin-student.html" class="bg-indigo-600 flex items-center gap-3 p-4 rounded-xl text-sm font-bold text-white shadow-lg"><i class="fas fa-user-graduate"></i> 학교/학생 관리</a>
             </nav>
-            <div class="p-6 border-t border-slate-800">
-                <button onclick="handleLogout()" class="flex items-center gap-2 text-xs font-bold text-rose-400 hover:text-rose-300 transition-all">
-                    <i class="fas fa-sign-out-alt"></i> 로그아웃
-                </button>
-            </div>
         </aside>
 
         <main class="flex-grow p-10 overflow-y-auto">
             <header class="mb-10 flex justify-between items-end">
                 <div>
-                    <h1 class="text-3xl font-black text-slate-900 uppercase">Revenue & Settlement</h1>
-                    <p class="text-slate-500 font-medium">관리자 전용 정산 시스템입니다.</p>
+                    <h1 class="text-3xl font-black text-slate-900 uppercase">Student Management</h1>
+                    <p class="text-slate-500 font-medium">학생들의 이수율을 관리하고 학교/과목 리스트를 설정합니다.</p>
                 </div>
-                <button onclick="downloadExcel()" class="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg hover:bg-emerald-600">
-                    <i class="fas fa-file-excel mr-2"></i> 엑셀 추출하기
-                </button>
+                <div class="flex gap-3">
+                    <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black text-sm shadow-lg hover:bg-emerald-700 transition-all">
+                        <i class="fas fa-file-excel mr-2"></i> 학생 명단 추출
+                    </button>
+                    <div class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <span class="text-xs font-black text-slate-400 uppercase">Pass 기준</span>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="pass-threshold" value="80" oninput="loadStudents()" class="w-12 bg-slate-50 border-none rounded-lg p-2 text-center font-bold text-indigo-600">
+                            <span class="font-bold text-slate-700">%</span>
+                        </div>
+                    </div>
+                </div>
             </header>
 
-            <div class="card mb-8">
-                <div class="flex flex-wrap gap-6 items-end">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1">조회 기간</label>
-                        <div class="flex items-center gap-2">
-                            <input type="date" id="start-date" class="filter-select">
-                            <span class="text-slate-300">~</span>
-                            <input type="date" id="end-date" class="filter-select">
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1">학교/강좌 선택</label>
-                        <div class="flex gap-2">
-                            <select id="filter-school" class="filter-select"><option value="all">전체 학교</option></select>
-                            <select id="filter-class" class="filter-select"><option value="all">전체 강좌</option></select>
-                        </div>
-                    </div>
-                    <button onclick="loadRevenueData()" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-800">필터 적용</button>
+            <div class="flex gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm w-fit border border-slate-100">
+                <button onclick="switchTab('status')" id="btn-status" class="tab-btn active px-6 py-3 rounded-xl text-sm font-black transition-all">학생 성취도</button>
+                <button onclick="switchTab('manage')" id="btn-manage" class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-slate-400 transition-all">조직/분류 관리</button>
+            </div>
+
+            <div id="tab-status" class="tab-content active">
+                <div class="flex gap-4 mb-6">
+                    <select id="filter-school" onchange="loadStudents()" class="bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm outline-none">
+                        <option value="all">전체 학교</option>
+                    </select>
+                    <select id="filter-class" onchange="loadStudents()" class="bg-white border-none rounded-2xl px-6 py-3 text-sm font-bold shadow-sm outline-none">
+                        <option value="all">전체 수강반</option>
+                    </select>
+                </div>
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <tr>
+                                <th class="p-8">학생정보(ID)</th>
+                                <th class="p-8">소속 학교</th>
+                                <th class="p-8">수강반</th>
+                                <th class="p-8">이수율</th>
+                                <th class="p-8">판정</th>
+                                <th class="p-8 text-right">삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-list-container" class="font-bold text-slate-700"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                <div class="card bg-slate-900 text-white border-none"><p class="text-[10px] font-black opacity-50 mb-2">총 매출</p><h3 id="total-revenue" class="text-2xl font-black">₩ 0</h3></div>
-                <div class="card"><p class="text-[10px] font-black text-slate-400 mb-2">결제 완료</p><h3 id="total-paid" class="text-2xl font-black text-slate-900">0 건</h3></div>
-                <div class="card"><p class="text-[10px] font-black text-slate-400 mb-2">입금 대기</p><h3 id="total-pending" class="text-2xl font-black text-orange-500">0 건</h3></div>
-            </div>
-
-            <div class="card !p-0 overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50/50">
-                        <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b">
-                            <th class="p-6">결제일시</th>
-                            <th class="p-6">학생(학교)</th>
-                            <th class="p-6">강좌명</th>
-                            <th class="p-6">금액</th>
-                            <th class="p-6">상태</th>
-                            <th class="p-6 text-right">관리</th>
-                        </tr>
-                    </thead>
-                    <tbody id="revenue-list" class="text-sm font-bold text-slate-700 divide-y divide-slate-50"></tbody>
-                </table>
+            <div id="tab-manage" class="tab-content">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-black text-slate-800 mb-6 italic"><i class="fas fa-university mr-2"></i> 학교 생성</h3>
+                        <div class="flex gap-2 mb-8">
+                            <input type="text" id="new-school" placeholder="학교명 입력" class="flex-grow bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold outline-none">
+                            <button onclick="addItem('Schools', 'new-school')" class="bg-slate-900 text-white px-8 rounded-2xl font-bold text-sm">추가</button>
+                        </div>
+                        <div id="managed-school-list" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-black text-indigo-600 mb-6 italic"><i class="fas fa-tags mr-2"></i> 수업 분류 생성</h3>
+                        <div class="flex gap-2 mb-8">
+                            <input type="text" id="new-category" placeholder="과목명 입력" class="flex-grow bg-slate-50 border-none rounded-2xl p-4 text-sm font-bold outline-none">
+                            <button onclick="addItem('SubjectCategories', 'new-category')" class="bg-indigo-600 text-white px-8 rounded-2xl font-bold text-sm">추가</button>
+                        </div>
+                        <div id="managed-category-list" class="space-y-3"></div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
     <script type="module">
+        // [보안] 관리자 전용 접근 보안 코드 삽입
+        (function() {
+            const userLogined = localStorage.getItem('userLogined');
+            if (!userLogined) {
+                alert("로그인이 필요합니다.");
+                location.replace('login.html');
+                return;
+            }
+            const userData = JSON.parse(userLogined);
+            if (userData.userId !== 'eduthot') {
+                alert("관리자 권한이 없습니다.");
+                location.replace('index.html');
+                return;
+            }
+        })();
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBThrCtBNJuVcfPD3Vm6XvPD7McT5JJsN8",
@@ -129,103 +133,92 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 페이지 초기 데이터 로드
-        const initData = () => {
-            const now = new Date();
-            document.getElementById('start-date').value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-            document.getElementById('end-date').value = now.toISOString().split('T')[0];
-            syncFilters();
-            loadRevenueData();
-        };
-
-        const syncFilters = () => {
-            onSnapshot(query(collection(db, "Schools"), orderBy("createdAt", "desc")), (snap) => {
-                const sel = document.getElementById('filter-school');
-                const cur = sel.value;
-                sel.innerHTML = '<option value="all">전체 학교</option>';
-                snap.forEach(d => sel.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-                sel.value = cur;
-            });
-
-            onSnapshot(query(collection(db, "Courses"), orderBy("createdAt", "desc")), (snap) => {
-                const sel = document.getElementById('filter-class');
-                const cur = sel.value;
-                sel.innerHTML = '<option value="all">전체 강좌</option>';
-                const names = new Set();
-                snap.forEach(d => { if(d.data().name) names.add(d.data().name); });
-                names.forEach(name => sel.innerHTML += `<option value="${name}">${name}</option>`);
-                sel.value = cur;
-            });
-        };
-
-        window.loadRevenueData = () => {
-            const fSch = document.getElementById('filter-school').value;
-            const fCls = document.getElementById('filter-class').value;
-            const sDate = document.getElementById('start-date').value;
-            const eDate = document.getElementById('end-date').value;
-
-            onSnapshot(query(collection(db, "Payments"), orderBy("paidAt", "desc")), (snap) => {
-                const list = document.getElementById('revenue-list');
-                let rev = 0, pCnt = 0, dCnt = 0;
-                list.innerHTML = "";
-
+        window.loadStudents = () => {
+            onSnapshot(query(collection(db, "Users"), orderBy("createdAt", "desc")), (snap) => {
+                const container = document.getElementById('student-list-container');
+                const fSch = document.getElementById('filter-school').value;
+                const fCls = document.getElementById('filter-class').value;
+                const threshold = parseInt(document.getElementById('pass-threshold').value) || 80;
+                const classSet = new Set();
+                
+                container.innerHTML = "";
                 snap.forEach(d => {
-                    const p = d.data();
-                    const pDate = p.paidAt?.toDate();
-                    const pDateStr = pDate ? pDate.toISOString().split('T')[0] : "";
-                    const pCourse = p.courseName || p.name || p.userClass || "";
+                    const u = d.data();
+                    if(u.userId === 'eduthot') return; 
+                    
+                    if(u.userClass) classSet.add(u.userClass);
 
-                    if(fSch !== 'all' && p.school !== fSch) return;
-                    if(fCls !== 'all' && pCourse !== fCls) return;
-                    if(sDate && pDateStr < sDate) return;
-                    if(eDate && pDateStr > eDate) return;
+                    if(fSch !== 'all' && u.school !== fSch) return;
+                    if(fCls !== 'all' && u.userClass !== fCls) return;
 
-                    if(p.status === 'completed') { rev += Number(p.amount); pCnt++; }
-                    else if(p.status === 'pending') { dCnt++; }
+                    const prog = u.progress || 0;
+                    const isPass = prog >= threshold;
 
-                    list.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-6 text-xs text-slate-400 font-medium">${pDate ? pDate.toLocaleString() : '-'}</td>
-                            <td class="p-6 font-bold text-slate-800">${p.userName}<span class="block text-[10px] text-slate-400 font-medium">${p.school}</span></td>
-                            <td class="p-6 text-xs font-bold">${pCourse}</td>
-                            <td class="p-6 text-indigo-600 font-black">₩ ${Number(p.amount).toLocaleString()}</td>
-                            <td class="p-6">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-black ${p.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'}">
-                                    ${p.status === 'completed' ? '결제완료' : '입금대기'}
-                                </span>
+                    container.innerHTML += `
+                        <tr class="border-b border-slate-50 hover:bg-slate-50/50">
+                            <td class="p-8">${u.userName || '미입력'} <span class="text-[10px] text-slate-400">(${u.userId})</span></td>
+                            <td class="p-8 text-xs text-slate-500">${u.school || '-'}</td>
+                            <td class="p-8 text-xs text-indigo-600">${u.userClass || '-'}</td>
+                            <td class="p-8">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full bg-indigo-500" style="width:${prog}%"></div>
+                                    </div>
+                                    <span class="text-[11px]">${prog}%</span>
+                                </div>
                             </td>
-                            <td class="p-6 text-right">
-                                ${p.status === 'pending' ? `<button onclick="approvePayment('${d.id}')" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-indigo-600">승인</button>` : `<span class="text-slate-300 text-xs font-medium">완료</span>`}
-                            </td>
+                            <td class="p-8"><span class="px-3 py-1 rounded-full text-[10px] ${isPass ? 'status-pass' : 'status-fail'}">${isPass ? 'PASS' : 'FAIL'}</span></td>
+                            <td class="p-8 text-right text-slate-200 hover:text-rose-500 cursor-pointer" onclick="deleteItem('Users','${d.id}')"><i class="fas fa-trash-alt"></i></td>
                         </tr>`;
                 });
-                document.getElementById('total-revenue').innerText = `₩ ${rev.toLocaleString()}`;
-                document.getElementById('total-paid').innerText = `${pCnt} 건`;
-                document.getElementById('total-pending').innerText = `${dCnt} 건`;
+                
+                const clsSelect = document.getElementById('filter-class');
+                const current = clsSelect.value;
+                clsSelect.innerHTML = '<option value="all">전체 수강반</option>';
+                Array.from(classSet).sort().forEach(c => {
+                    clsSelect.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+                clsSelect.value = current;
             });
         };
 
-        window.approvePayment = async (id) => {
-            if(confirm("입금을 승인하시겠습니까?")) await updateDoc(doc(db, "Payments", id), { status: 'completed' });
+        window.addItem = async (col, inputId) => {
+            const val = document.getElementById(inputId).value.trim();
+            if(!val) return;
+            await addDoc(collection(db, col), { name: val, createdAt: new Date() });
+            document.getElementById(inputId).value = "";
         };
 
-        window.downloadExcel = () => {
-            const table = document.querySelector("table");
-            let csv = "\ufeff";
-            const rows = Array.from(table.querySelectorAll("tr"));
-            rows.forEach(row => {
-                const cols = Array.from(row.querySelectorAll("th, td")).slice(0, 5);
-                csv += cols.map(c => `"${c.innerText.trim().replace(/\n/g, ' ')}"`).join(",") + "\n";
+        window.deleteItem = async (col, id) => { if(confirm("삭제하시겠습니까?")) await deleteDoc(doc(db, col, id)); };
+
+        window.switchTab = (id) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-slate-400'); });
+            document.getElementById('tab-' + id).classList.add('active');
+            event.currentTarget.classList.add('active'); event.currentTarget.classList.remove('text-slate-400');
+        };
+
+        const syncSettings = () => {
+            onSnapshot(query(collection(db, "Schools"), orderBy("createdAt", "desc")), (snap) => {
+                const list = document.getElementById('managed-school-list');
+                const filter = document.getElementById('filter-school');
+                list.innerHTML = ""; filter.innerHTML = '<option value="all">전체 학교</option>';
+                snap.forEach(d => {
+                    const n = d.data().name;
+                    list.innerHTML += `<div class="flex justify-between p-4 bg-slate-50 rounded-2xl text-sm font-bold"><span>${n}</span><button onclick="deleteItem('Schools','${d.id}')" class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button></div>`;
+                    filter.innerHTML += `<option value="${n}">${n}</option>`;
+                });
             });
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `매출보고서_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
+            onSnapshot(query(collection(db, "SubjectCategories"), orderBy("createdAt", "desc")), (snap) => {
+                const list = document.getElementById('managed-category-list');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    list.innerHTML += `<div class="flex justify-between p-4 bg-indigo-50/50 text-indigo-700 rounded-2xl text-sm font-bold"><span>${d.data().name}</span><button onclick="deleteItem('SubjectCategories','${d.id}')" class="text-indigo-200 hover:text-rose-500"><i class="fas fa-trash-alt"></i></button></div>`;
+                });
+            });
         };
 
-        // 초기 데이터 로드 호출
-        initData();
+        window.onload = () => { syncSettings(); loadStudents(); };
     </script>
 </body>
 </html>
